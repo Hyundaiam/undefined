@@ -1,0 +1,273 @@
+{
+  "version": "neural-v1",
+  "engine": "Qwen3-TTS",
+  "design_model": "mlx-community/Qwen3-TTS-12Hz-1.7B-VoiceDesign-bf16",
+  "clone_model": "mlx-community/Qwen3-TTS-12Hz-1.7B-Base-bf16",
+  "system_tts": false,
+  "clips": [
+    {
+      "persona": "friend",
+      "slot": "sample",
+      "sha256": "0d7bb9aae075275b3670cf98e2a72cc715646f985308850be8d27ada8fee4151",
+      "bytes": 153122
+    },
+    {
+      "persona": "friend",
+      "slot": "resolved",
+      "sha256": "b12f110f2a12d8f5a6a5331758f3f2724c892dab0e61e84bbf807d4fa2221239",
+      "bytes": 123865
+    },
+    {
+      "persona": "friend",
+      "slot": "cruise",
+      "sha256": "4e650a94169534f8c22eb0c36fff81bdfb986e460b964d5fea40d2824f4aed4e",
+      "bytes": 111326
+    },
+    {
+      "persona": "friend",
+      "slot": "distance",
+      "sha256": "ea47ee6b8e64e47bd30a5269f6b94aa6ab1c21f53ae36e9ea6fdcafbae970dd3",
+      "bytes": 104534
+    },
+    {
+      "persona": "friend",
+      "slot": "tunnel",
+      "sha256": "03624dd0ad815c36db1a07ae530da14e01d4f2322767ce50aa4f967d2fd64907",
+      "bytes": 109759
+    },
+    {
+      "persona": "friend",
+      "slot": "corner",
+      "sha256": "23f104ede1b4c17b729300d123669a0b4f0426db9f585a7ff46c9ed7544f98a0",
+      "bytes": 98265
+    },
+    {
+      "persona": "friend",
+      "slot": "posture",
+      "sha256": "aa9108b3881cc33dd6eaecdf31f8adf69fda6169d4b4677693831b9da51a0394",
+      "bytes": 121253
+    },
+    {
+      "persona": "friend",
+      "slot": "speed",
+      "sha256": "4dc0e952b51d95fe8dc4b6aedc74218248efc8c69ccd1e2c0dbdd3c42a2f56c1",
+      "bytes": 111326
+    },
+    {
+      "persona": "friend",
+      "slot": "passenger",
+      "sha256": "c892d92b2064d1ef98cc6fb9e947032882a27815f72c2139056d54afc8980966",
+      "bytes": 90951
+    },
+    {
+      "persona": "friend",
+      "slot": "praise",
+      "sha256": "49ae1dfdf7e9f53f130c474a55692c45ec46e68fc1ad43e2cbfe3e9d4467e5e0",
+      "bytes": 177677
+    },
+    {
+      "persona": "friend",
+      "slot": "parking",
+      "sha256": "a8c3eea55206aca6a97daeb0c12ac175c5a3029ec8f60d1b6ad2a0f0b49b6bc7",
+      "bytes": 179245
+    },
+    {
+      "persona": "grandma",
+      "slot": "sample",
+      "sha256": "118bf6d57b2084d01394ef701b4acd961a6cfe588c3222f7ae2a64b329dfdbce",
+      "bytes": 113416
+    },
+    {
+      "persona": "grandma",
+      "slot": "resolved",
+      "sha256": "e11a684542a4c7318ac93cf890c8810424b4f104c4c93f1a9c80c136fbb18ba1",
+      "bytes": 135359
+    },
+    {
+      "persona": "grandma",
+      "slot": "cruise",
+      "sha256": "a3562b099504cc954476c60ae4c79240344e1721f41c40222355ee8919defb4b",
+      "bytes": 138494
+    },
+    {
+      "persona": "grandma",
+      "slot": "distance",
+      "sha256": "a01c34a8aa3650a52a91e1d8396e62568c8119d09fb78af64496156e9adbd271",
+      "bytes": 108192
+    },
+    {
+      "persona": "grandma",
+      "slot": "tunnel",
+      "sha256": "2efa5bff4604d77ba4be70b918d207535244f90ee104c3bfe8aad799807b93fa",
+      "bytes": 136926
+    },
+    {
+      "persona": "grandma",
+      "slot": "corner",
+      "sha256": "bae86a4c0ce0a47917e54c6654699177364bb27909ca111398e9096f0df76f15",
+      "bytes": 124387
+    },
+    {
+      "persona": "grandma",
+      "slot": "posture",
+      "sha256": "351c5d2b6ba785e296d12df4a75a744cf15e0e83ea59155abed69793af161700",
+      "bytes": 122298
+    },
+    {
+      "persona": "grandma",
+      "slot": "speed",
+      "sha256": "1ee642cd1221e625dfe1e61f516956aa8807ac6c0d360fcc3bf0048df75aa9d5",
+      "bytes": 124910
+    },
+    {
+      "persona": "grandma",
+      "slot": "passenger",
+      "sha256": "d746420c78ee28bb1d57fb32dcf5128a0eed8abb3e7462d4960dfc206e2dfeda",
+      "bytes": 117596
+    },
+    {
+      "persona": "grandma",
+      "slot": "praise",
+      "sha256": "2187eb24fc7000ffdaba3c57749d4dd9678bb99b343019fdfc043956ba56917f",
+      "bytes": 148943
+    },
+    {
+      "persona": "grandma",
+      "slot": "parking",
+      "sha256": "c9df4019dd6d01f7bc9da6930813a9f40a98f96306a4d8a7d857427e87d0aed9",
+      "bytes": 178722
+    },
+    {
+      "persona": "mom",
+      "slot": "sample",
+      "sha256": "1b5fc57ebc58329e0974eda5603d0b13bf221705db73a6c69e52f0e9eab17f85",
+      "bytes": 147375
+    },
+    {
+      "persona": "mom",
+      "slot": "resolved",
+      "sha256": "c951824141526a6c18bcc0cfbdbd18d90a6723dfa8c2158061c9bdb382d56c81",
+      "bytes": 161481
+    },
+    {
+      "persona": "mom",
+      "slot": "cruise",
+      "sha256": "56ab9e94a8b9e54730b9a581aea30497ae452f359588588dab422f2c198ce97e",
+      "bytes": 133792
+    },
+    {
+      "persona": "mom",
+      "slot": "distance",
+      "sha256": "d53b7cffae5d3cc985e553aac969443277c57ccc2a30d36efb8348435fb063d2",
+      "bytes": 148943
+    },
+    {
+      "persona": "mom",
+      "slot": "tunnel",
+      "sha256": "5d0b0e8bd3d0537c3a35ae43a18e705ec350d8645147136d650c8bcc0caff776",
+      "bytes": 145808
+    },
+    {
+      "persona": "mom",
+      "slot": "corner",
+      "sha256": "3d41080c5dd477ff28e525cd816fcfc604824db2e04fe8cb7d1f8301379335ad",
+      "bytes": 117596
+    },
+    {
+      "persona": "mom",
+      "slot": "posture",
+      "sha256": "8d82da8f7166aac3aa0e8a6cc753d6158d8264621089a2eda0143ca5e6972da6",
+      "bytes": 140583
+    },
+    {
+      "persona": "mom",
+      "slot": "speed",
+      "sha256": "916bffd5480b85c3a2710e2b346c572d9a1afdbc9b54a53930a8a52befab88ae",
+      "bytes": 153122
+    },
+    {
+      "persona": "mom",
+      "slot": "passenger",
+      "sha256": "9683e6d60743bed8e89f9c65973e04ac9d28d9c1b314324f6316905dbdca0123",
+      "bytes": 108192
+    },
+    {
+      "persona": "mom",
+      "slot": "praise",
+      "sha256": "962f560869ab6dcb6dcf9c09dfe55c5a9e966e90260e6fe097628722b9843feb",
+      "bytes": 162526
+    },
+    {
+      "persona": "mom",
+      "slot": "parking",
+      "sha256": "e3bf1c8dee7ae18a79989fd84f1d4259285c160e5e044ce905ed181ce3e3212f",
+      "bytes": 181334
+    },
+    {
+      "persona": "sibling",
+      "slot": "sample",
+      "sha256": "66055ec7ca0d9acf1f7e24f5a3a4f0da37ffcf9013160c96a188f200a5b2c7d4",
+      "bytes": 89383
+    },
+    {
+      "persona": "sibling",
+      "slot": "resolved",
+      "sha256": "121afbbe64bdd26939a0849bd7e7acae92614effb0842f8c3a5481fff022053f",
+      "bytes": 128567
+    },
+    {
+      "persona": "sibling",
+      "slot": "cruise",
+      "sha256": "b70699e77c74ccdccf2072218dd966e394d8d75d3d395c14e636fabd2ff9d258",
+      "bytes": 104012
+    },
+    {
+      "persona": "sibling",
+      "slot": "distance",
+      "sha256": "19c16f1a32b1ffacdfd0d64553d6c0005ab602043c972851061a36d21ac84fe5",
+      "bytes": 108192
+    },
+    {
+      "persona": "sibling",
+      "slot": "tunnel",
+      "sha256": "c692906ffcd9ca9b987bedd2747bdd7589136acf7f8290da0df7eb3a5451179b",
+      "bytes": 105057
+    },
+    {
+      "persona": "sibling",
+      "slot": "corner",
+      "sha256": "7bb59953cf308e6ec7752dd05d8894f74fcdb9e2bcec46a201d23248754bcec0",
+      "bytes": 121775
+    },
+    {
+      "persona": "sibling",
+      "slot": "posture",
+      "sha256": "c453feaad4cba08a876d35c568e17d5078f6047f650308bbd81fb1f117116c30",
+      "bytes": 121775
+    },
+    {
+      "persona": "sibling",
+      "slot": "speed",
+      "sha256": "15e65160169bcc1e9070b89647f0cac1ce301626a363e0c4691d10df41a8edcf",
+      "bytes": 143196
+    },
+    {
+      "persona": "sibling",
+      "slot": "passenger",
+      "sha256": "5829dc5bc707eaea74e8664acfb9a4d19b9add5283a8782dee050217f21c7c33",
+      "bytes": 125432
+    },
+    {
+      "persona": "sibling",
+      "slot": "praise",
+      "sha256": "2826e54025d7d8aaaa99c5e1d8384d3398b28becdaf597dde7c88ca668b78f3e",
+      "bytes": 101922
+    },
+    {
+      "persona": "sibling",
+      "slot": "parking",
+      "sha256": "1fbf8e0076a799486693c4c85bedec1ecba6ead6b796ffd7597ee9a9b3a1b4bd",
+      "bytes": 170885
+    }
+  ]
+}

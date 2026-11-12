@@ -1,0 +1,476 @@
+{
+  "version": 1,
+  "scenarios": [
+    {
+      "id": "G01",
+      "title": "안전거리 유지",
+      "category": "distance",
+      "tone": "GOOD",
+      "trigger": "앞차와 시간 차간거리 여유를 유지",
+      "recordingText": "앞차와 거리 잘 두고 있네. 여유 있게 가니까 좋다.",
+      "requiredSignals": [
+        "front_distance",
+        "vehicle_speed"
+      ],
+      "legacyClip": "cruise"
+    },
+    {
+      "id": "B01",
+      "title": "앞차에 너무 가까움",
+      "category": "distance",
+      "tone": "CAUTION",
+      "trigger": "짧은 시간 차간거리가 지속",
+      "recordingText": "앞차랑 가까워졌어. 거리를 조금 더 벌려줘.",
+      "requiredSignals": [
+        "front_distance",
+        "vehicle_speed"
+      ],
+      "legacyClip": "distance"
+    },
+    {
+      "id": "G02",
+      "title": "제한 속도 준수",
+      "category": "speed",
+      "tone": "GOOD",
+      "trigger": "확인된 도로 제한 속도 이하로 주행",
+      "recordingText": "이 도로 속도 잘 지키고 있네. 이대로 안전하게 가자.",
+      "requiredSignals": [
+        "vehicle_speed",
+        "road_speed_limit"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B02",
+      "title": "제한 속도 초과",
+      "category": "speed",
+      "tone": "CAUTION",
+      "trigger": "도로 제한 속도보다 빠르게 주행",
+      "recordingText": "지금 제한 속도보다 빨라. 속도를 낮춰줘.",
+      "requiredSignals": [
+        "vehicle_speed",
+        "road_speed_limit"
+      ],
+      "legacyClip": "speed"
+    },
+    {
+      "id": "G03",
+      "title": "부드러운 출발",
+      "category": "acceleration",
+      "tone": "GOOD",
+      "trigger": "급격하지 않은 속도 증가로 출발",
+      "recordingText": "출발이 부드러웠어. 같이 타는 사람도 편안하겠다.",
+      "requiredSignals": [
+        "vehicle_speed"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B03",
+      "title": "반복적인 급가속",
+      "category": "acceleration",
+      "tone": "CAUTION",
+      "trigger": "속도가 짧은 시간에 급격하게 증가",
+      "recordingText": "출발이 조금 급했어. 천천히 가속해줘.",
+      "requiredSignals": [
+        "vehicle_speed"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "G04",
+      "title": "미리 감속하고 정지",
+      "category": "braking",
+      "tone": "GOOD",
+      "trigger": "여유 있게 감속해 부드럽게 정지",
+      "recordingText": "미리 속도 줄인 덕분에 편안하게 멈췄네. 잘했어.",
+      "requiredSignals": [
+        "vehicle_speed",
+        "emergency_context"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B04",
+      "title": "불필요한 급제동",
+      "category": "braking",
+      "tone": "CAUTION",
+      "trigger": "불가피한 회피 상황을 제외하고 급제동이 반복",
+      "recordingText": "방금 멈추는 게 급했어. 앞 상황을 조금 더 일찍 살펴보자.",
+      "requiredSignals": [
+        "vehicle_speed",
+        "emergency_context"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "G05",
+      "title": "코너 진입 전 감속",
+      "category": "corner",
+      "tone": "GOOD",
+      "trigger": "굽은 길에 들어가기 전에 감속",
+      "recordingText": "방금 코너 정말 부드러웠어. 차분하게 잘 돌았네.",
+      "requiredSignals": [
+        "vehicle_speed",
+        "curve_context"
+      ],
+      "legacyClip": "praise"
+    },
+    {
+      "id": "B05",
+      "title": "코너에 빠르게 진입",
+      "category": "corner",
+      "tone": "CAUTION",
+      "trigger": "곡선 구간의 확인된 권장 속도보다 빠르게 진입",
+      "recordingText": "앞에 굽은 길이 있어. 들어가기 전에 속도를 줄여줘.",
+      "requiredSignals": [
+        "vehicle_speed",
+        "curve_context"
+      ],
+      "legacyClip": "corner"
+    },
+    {
+      "id": "G06",
+      "title": "방향지시등 먼저 사용",
+      "category": "indicator",
+      "tone": "GOOD",
+      "trigger": "방향지시등을 켠 뒤 차로 변경",
+      "recordingText": "방향지시등 먼저 켜줬네. 뒤차도 알아보기 좋았겠다.",
+      "requiredSignals": [
+        "turn_signal",
+        "lane_change"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B06",
+      "title": "방향지시등 없이 차로 변경",
+      "category": "indicator",
+      "tone": "CAUTION",
+      "trigger": "확인된 차로 변경 때 방향지시등이 꺼져 있음",
+      "recordingText": "차로 바꾸기 전에는 방향지시등부터 켜줘.",
+      "requiredSignals": [
+        "turn_signal",
+        "lane_change"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "G07",
+      "title": "안정적인 차선 유지",
+      "category": "lane",
+      "tone": "GOOD",
+      "trigger": "차선 안에서 안정적으로 주행",
+      "recordingText": "차선 안에서 안정적으로 가고 있네. 지금 좋아.",
+      "requiredSignals": [
+        "lane_perception"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B07",
+      "title": "의도하지 않은 차선 이탈",
+      "category": "lane",
+      "tone": "CAUTION",
+      "trigger": "차선 변경 의사 없이 차선을 벗어나는 움직임",
+      "recordingText": "차선에서 벗어나고 있어. 앞을 보고 차분하게 주행해줘.",
+      "requiredSignals": [
+        "lane_perception"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "G08",
+      "title": "횡단보도 앞 보행자 배려",
+      "category": "pedestrian",
+      "tone": "GOOD",
+      "trigger": "확인된 보행자 접근에 미리 감속하고 양보",
+      "recordingText": "보행자 보고 미리 속도 줄여줬네. 좋은 운전이야.",
+      "requiredSignals": [
+        "pedestrian_perception",
+        "crosswalk_context",
+        "vehicle_speed"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B08",
+      "title": "보행자 접근 상황에서 감속 부족",
+      "category": "pedestrian",
+      "tone": "CAUTION",
+      "trigger": "확인된 보행자와 횡단보도 상황에서 감속하지 않음",
+      "recordingText": "앞에 보행자가 있어. 속도를 줄이고 주변을 살펴줘.",
+      "requiredSignals": [
+        "pedestrian_perception",
+        "crosswalk_context",
+        "vehicle_speed"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "G09",
+      "title": "빗길에서 여유 확보",
+      "category": "weather",
+      "tone": "GOOD",
+      "trigger": "비 오는 구간에서 속도와 차간거리 여유 확보",
+      "recordingText": "비 오는 길인데 여유 있게 가고 있네. 잘하고 있어.",
+      "requiredSignals": [
+        "weather_context",
+        "vehicle_speed",
+        "front_distance"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B09",
+      "title": "빗길에서 속도·거리 주의",
+      "category": "weather",
+      "tone": "CAUTION",
+      "trigger": "확인된 젖은 도로 상황에 맞지 않는 속도나 거리",
+      "recordingText": "길이 젖어 있어. 속도를 줄이고 앞차와 더 여유를 둬.",
+      "requiredSignals": [
+        "weather_context",
+        "vehicle_speed",
+        "front_distance"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "G10",
+      "title": "터널 전에 창문 닫기",
+      "category": "tunnel",
+      "tone": "GOOD",
+      "trigger": "터널 구간 진입 전 창문을 닫음",
+      "recordingText": "터널 들어가기 전에 창문 챙겼네. 잘했어.",
+      "requiredSignals": [
+        "tunnel_context",
+        "window_position"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B10",
+      "title": "터널에서 열린 창문",
+      "category": "tunnel",
+      "tone": "CAUTION",
+      "trigger": "확인된 터널 구간에서 창문이 열려 있음",
+      "recordingText": "이제 터널이야. 열려 있는 창문을 확인해줘.",
+      "requiredSignals": [
+        "tunnel_context",
+        "window_position"
+      ],
+      "legacyClip": "tunnel"
+    },
+    {
+      "id": "G11",
+      "title": "양손으로 핸들 잡기",
+      "category": "hands",
+      "tone": "GOOD",
+      "trigger": "일반 주행에서 양손으로 핸들 유지",
+      "recordingText": "두 손으로 안정적으로 잡고 있네. 지금처럼 해줘.",
+      "requiredSignals": [
+        "cabin_hands_perception",
+        "vehicle_speed"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B11",
+      "title": "지속적인 한 손 운전",
+      "category": "hands",
+      "tone": "CAUTION",
+      "trigger": "변속 등 일시적인 조작을 제외하고 한 손 운전이 지속",
+      "recordingText": "한 손으로 계속 운전하고 있어. 두 손으로 잡아줘.",
+      "requiredSignals": [
+        "cabin_hands_perception",
+        "vehicle_speed"
+      ],
+      "legacyClip": "posture"
+    },
+    {
+      "id": "G12",
+      "title": "올바른 페달 조작 습관",
+      "category": "pedals",
+      "tone": "GOOD",
+      "trigger": "자동변속 차량에서 확인된 올바른 발 위치 유지",
+      "recordingText": "페달 조작 습관 잘 지키고 있네. 차분하게 가자.",
+      "requiredSignals": [
+        "pedal_foot_perception",
+        "transmission_type"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B12",
+      "title": "자동변속 차량 양발 조작",
+      "category": "pedals",
+      "tone": "CAUTION",
+      "trigger": "별도 발 위치 센서로 자동변속 차량 양발 조작이 확인됨",
+      "recordingText": "페달 조작 자세를 확인해줘. 안전한 곳에 멈춘 뒤 다시 점검하자.",
+      "requiredSignals": [
+        "pedal_foot_perception",
+        "transmission_type"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "G13",
+      "title": "설정한 좌석 자세 유지",
+      "category": "seat",
+      "tone": "GOOD",
+      "trigger": "운전자 또는 동승자가 정차 중 정한 기준 좌석 자세 유지",
+      "recordingText": "의자 자세 잘 맞췄네. 편안하고 안정적으로 가자.",
+      "requiredSignals": [
+        "seat_backrest",
+        "calibrated_seat_baseline"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B13",
+      "title": "등록한 좌석 자세에서 크게 벗어남",
+      "category": "seat",
+      "tone": "CAUTION",
+      "trigger": "기준과 비교해 등받이가 지나치게 누워 있음",
+      "recordingText": "좌석 자세가 등록한 기준과 많이 달라졌어. 안전한 곳에 멈춘 뒤 확인해줘.",
+      "requiredSignals": [
+        "seat_backrest",
+        "calibrated_seat_baseline"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "G14",
+      "title": "탑승자 안전벨트 착용",
+      "category": "belt",
+      "tone": "GOOD",
+      "trigger": "탑승이 확인된 좌석 모두 안전벨트를 착용",
+      "recordingText": "모두 안전벨트 잘 맸네. 이제 안전하게 출발하자.",
+      "requiredSignals": [
+        "seat_occupancy",
+        "seat_belt"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "B14",
+      "title": "탑승자 안전벨트 미착용",
+      "category": "belt",
+      "tone": "CAUTION",
+      "trigger": "출발 또는 주행 중 탑승 좌석의 안전벨트가 풀려 있음",
+      "recordingText": "안전벨트 안 맨 자리가 있어. 출발 전에 모두 확인해줘.",
+      "requiredSignals": [
+        "seat_occupancy",
+        "seat_belt"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "G15",
+      "title": "주차 후 마무리 확인",
+      "category": "parking",
+      "tone": "GOOD",
+      "trigger": "완전히 정차한 뒤 주차 상태와 시동 종료 절차 확인",
+      "recordingText": "오늘도 수고했어. 주차 상태까지 확인했네. 다음에 또 같이 가자.",
+      "requiredSignals": [
+        "gear",
+        "ignition_state",
+        "parking_brake"
+      ],
+      "legacyClip": "parking"
+    },
+    {
+      "id": "B15",
+      "title": "주차·시동 종료 확인 누락",
+      "category": "parking",
+      "tone": "CAUTION",
+      "trigger": "목적지 도착 후 주차 상태 또는 종료 확인이 필요",
+      "recordingText": "내리기 전에 주차 상태랑 시동 종료를 한 번 더 확인해줘.",
+      "requiredSignals": [
+        "gear",
+        "ignition_state",
+        "parking_brake"
+      ],
+      "legacyClip": null
+    },
+    {
+      "id": "C01",
+      "title": "첫 인사",
+      "category": "general",
+      "tone": "COMMON",
+      "trigger": "사용자 상호작용 또는 주행 회고",
+      "recordingText": "오늘도 같이 가자. 안전하게 도착할 때까지 내가 옆에 있을게.",
+      "requiredSignals": [],
+      "legacyClip": "sample"
+    },
+    {
+      "id": "C02",
+      "title": "습관 개선 칭찬",
+      "category": "general",
+      "tone": "COMMON",
+      "trigger": "사용자 상호작용 또는 주행 회고",
+      "recordingText": "지난번보다 정말 좋아졌어. 조금씩 바뀌는 게 보이네.",
+      "requiredSignals": []
+    },
+    {
+      "id": "C03",
+      "title": "일반 칭찬",
+      "category": "general",
+      "tone": "COMMON",
+      "trigger": "사용자 상호작용 또는 주행 회고",
+      "recordingText": "지금 정말 잘하고 있어. 이대로 차분하게 가자.",
+      "requiredSignals": [],
+      "legacyClip": null
+    },
+    {
+      "id": "C04",
+      "title": "짧은 주의",
+      "category": "general",
+      "tone": "COMMON",
+      "trigger": "사용자 상호작용 또는 주행 회고",
+      "recordingText": "잠깐만. 지금 상황을 한 번 더 살펴줘.",
+      "requiredSignals": [],
+      "legacyClip": null
+    },
+    {
+      "id": "C05",
+      "title": "반복 습관 잔소리",
+      "category": "general",
+      "tone": "COMMON",
+      "trigger": "사용자 상호작용 또는 주행 회고",
+      "recordingText": "아까도 비슷했어. 다음에는 조금만 더 신경 써보자.",
+      "requiredSignals": [],
+      "legacyClip": null
+    },
+    {
+      "id": "C06",
+      "title": "피드백 후 격려",
+      "category": "general",
+      "tone": "COMMON",
+      "trigger": "사용자 상호작용 또는 주행 회고",
+      "recordingText": "바로 고쳐줬네. 좋아. 이렇게 하나씩 익숙해지는 거야.",
+      "requiredSignals": [],
+      "legacyClip": "resolved"
+    },
+    {
+      "id": "C07",
+      "title": "주행 종료 인사",
+      "category": "general",
+      "tone": "COMMON",
+      "trigger": "사용자 상호작용 또는 주행 회고",
+      "recordingText": "오늘도 무사히 도착했네. 같이 와줘서 고마워.",
+      "requiredSignals": [],
+      "legacyClip": null
+    },
+    {
+      "id": "C08",
+      "title": "아쉬운 주행 회고",
+      "category": "general",
+      "tone": "COMMON",
+      "trigger": "사용자 상호작용 또는 주행 회고",
+      "recordingText": "오늘은 아쉬운 순간도 있었어. 다음에는 하나씩 더 좋아져보자.",
+      "requiredSignals": [],
+      "legacyClip": null
+    }
+  ]
+}

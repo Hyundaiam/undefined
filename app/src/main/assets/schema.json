@@ -1,0 +1,47 @@
+{
+  "packageName": "io.hyundaiam.gyeot",
+  "appDescription": "A driving companion that monitors available vehicle signals and tracks local driving habits.",
+  "invokeWord": "곁",
+  "version": "0.1.0",
+  "actionCalls": [
+    {
+      "type": "function",
+      "function": {
+        "component": "service",
+        "name": "GET_DRIVING_CONTEXT",
+        "description": "Read the active driving session, observed vehicle signals and recent coaching candidates.",
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "component": "service",
+        "name": "GET_DRIVING_PROGRESS",
+        "description": "Read the active driver's locally stored driving habit progress.",
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "component": "service",
+        "name": "GET_RECORDING_STATUS",
+        "description": "Read the registration status of personal coaching voice recordings.",
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      }
+    }
+  ]
+}

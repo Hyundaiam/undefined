@@ -42,6 +42,13 @@ class PleosSignals(private val app: GyeotApplication, private val scope: Corouti
     private fun readable(type: AccessType) = type == AccessType.READ || type == AccessType.READ_WRITE
     private fun seatKey(a: SeatArea) = a.values.joinToString("+") { it.name }
     private fun windowKey(a: WindowArea) = a.values.joinToString("+") { it.name }
+    private fun deviation(values: Map<String, Int>): Double? {
+        if (seatBaseline.isEmpty() || !seatBaseline.keys.all { it in values && seatRanges.containsKey(it) }) return null
+        return seatBaseline.mapNotNull { (key, baseline) ->
+            val bounds = seatRanges.getValue(key)
+            if (bounds.maxValue > bounds.minValue) abs(values.getValue(key) - baseline).toDouble() / (bounds.maxValue - bounds.minValue) else null
+        }.maxOrNull()
+    }
 
     fun start() {
         app.capability("실내 손·발 위치", "미제공 · 추가 실내 센서 필요")
@@ -75,7 +82,7 @@ class PleosSignals(private val app: GyeotApplication, private val scope: Corouti
                 }
                 sdk.registerFusedLocationCallback(callback)
                 cleanups += { sdk.unregisterFusedLocationCallback(callback) }
-            } else app.capability("FusedLocation SDK", if (locationAllowed) "환경 미지원" else "위치 권한 없음")
+            } else app.capability("FusedLocation SDK", if (locationAllowed) "환경 미지원" else "위치 수집 꺼짐")
         }.onFailure { error("FusedLocation SDK", it) }
         scope.launch {
             while (isActive) { probe(); delay(10_000) }
@@ -99,7 +106,7 @@ class PleosSignals(private val app: GyeotApplication, private val scope: Corouti
                     val key = seatKey(area)
                     if (connected.add("occupancy:$key")) {
                         val callback = object : SeatOccupancyListener {
-                            override fun onSeatOccupancyUpdated(value: Boolean?) { if (value != null) update { it.copy(occupiedSeats = if (value) it.occupiedSeats + key else it.occupiedSeats - key) } }
+                            override fun onSeatOccupancyUpdated(value: Boolean?) { update { it.copy(occupiedSeats = if (value == true) it.occupiedSeats + key else it.occupiedSeats - key) } }
                             override fun onFailed(exception: Exception) { update { it.copy(occupiedSeats = it.occupiedSeats - key) }; error("착석 $key", exception) }
                         }
                         seat.registerSeatOccupancy(area, callback); seat.getCurrentSeatOccupancy(area, callback::onSeatOccupancyUpdated) { callback.onFailed(it) }
@@ -113,7 +120,7 @@ class PleosSignals(private val app: GyeotApplication, private val scope: Corouti
                     val key = seatKey(area)
                     if (connected.add("belt:$key")) {
                         val callback = object : SeatBeltBuckledStateListener {
-                            override fun onSeatBeltBuckledStateUpdated(value: Boolean?) { if (value != null) update { it.copy(beltBySeat = it.beltBySeat + (key to value)) } }
+                            override fun onSeatBeltBuckledStateUpdated(value: Boolean?) { update { it.copy(beltBySeat = if (value == null) it.beltBySeat - key else it.beltBySeat + (key to value)) } }
                             override fun onFailed(exception: Exception) { update { it.copy(beltBySeat = it.beltBySeat - key) }; error("안전벨트 $key", exception) }
                         }
                         seat.registerSeatBeltBuckledState(area, callback); seat.getCurrentSeatBeltBuckledState(area, callback::onSeatBeltBuckledStateUpdated) { callback.onFailed(it) }
@@ -128,10 +135,9 @@ class PleosSignals(private val app: GyeotApplication, private val scope: Corouti
                     if (connected.add("seat:$key")) {
                         val callback = object : SeatBackrestAnglePositionListener {
                             override fun onSeatBackrestAnglePositionUpdated(value: Int?) {
-                                if (value != null) update { f ->
-                                    val values = f.backrestPositions + (key to value)
-                                    val deviations = values.mapNotNull { (k, v) -> val baseline = seatBaseline[k]; val bounds = seatRanges[k]; if (baseline != null && bounds != null && bounds.maxValue > bounds.minValue) abs(v - baseline).toDouble() / (bounds.maxValue - bounds.minValue) else null }
-                                    f.copy(backrestPositions = values, seatDeviationFraction = deviations.maxOrNull())
+                                update { f ->
+                                    val values = if (value == null) f.backrestPositions - key else f.backrestPositions + (key to value)
+                                    f.copy(backrestPositions = values, seatDeviationFraction = deviation(values))
                                 }
                             }
                             override fun onFailed(exception: Exception) { update { it.copy(backrestPositions = it.backrestPositions - key, seatDeviationFraction = null) }; error("등받이 $key", exception) }
@@ -149,8 +155,8 @@ class PleosSignals(private val app: GyeotApplication, private val scope: Corouti
                     if (connected.add("window:$key")) {
                         val callback = object : WindowPositionListener {
                             override fun onWindowPositionUpdated(value: Int?) {
-                                if (value != null) update { f ->
-                                    val values = f.windowPositions + (key to value)
+                                update { f ->
+                                    val values = if (value == null) f.windowPositions - key else f.windowPositions + (key to value)
                                     val calibrated = closedWindows.isNotEmpty() && closedWindows.keys.all { it in values }
                                     f.copy(windowPositions = values, windowOpen = if (calibrated) closedWindows.any { (k, v) -> values[k] != v } else null)
                                 }

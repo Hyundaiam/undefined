@@ -62,6 +62,7 @@ private fun App(activity: MainActivity, app: GyeotApplication) {
     val drivers by remember { app.dao.drivers() }.collectAsStateWithLifecycle(emptyList())
     val monitor by app.monitor.collectAsStateWithLifecycle()
     val driver = drivers.firstOrNull { it.id == prefs.driverId } ?: drivers.firstOrNull()
+    val displayedMonitor = if (monitor.driverId == driver?.id && monitor.demo == prefs.demo) monitor else MonitorUi()
     val source = if (prefs.demo) "DEMO" else "PLEOS"
     val events by remember(driver?.id, source) { app.dao.events(driver?.id ?: 1, source) }.collectAsStateWithLifecycle(emptyList())
     val habits by remember(driver?.id, source) { app.dao.habits(driver?.id ?: 1, source) }.collectAsStateWithLifecycle(emptyList())
@@ -117,13 +118,13 @@ private fun App(activity: MainActivity, app: GyeotApplication) {
             HorizontalDivider(color = Line)
             Box(Modifier.weight(1f).fillMaxWidth()) {
                 when (tab) {
-                    0 -> DriveScreen(app, driver, prefs, monitor, clips, ::toggle) { scenario -> activity.startService(Intent(activity, DrivingService::class.java).setAction(DrivingService.SCENARIO).putExtra("scenario", scenario.id)) }
+                    0 -> DriveScreen(app, driver, prefs, displayedMonitor, clips, ::toggle) { scenario -> activity.startService(Intent(activity, DrivingService::class.java).setAction(DrivingService.SCENARIO).putExtra("scenario", scenario.id)) }
                     1 -> ProgressScreen(habits, trips, events, app, prefs.demo)
                     2 -> VoiceScreen(app, driver, clips, audioMessage, !monitor.running || monitor.demo,
                         onPersona = { id -> driver?.let { scope.launch { app.dao.setPersona(it.id, id) } } },
                         onPlay = { scenario -> scope.launch { app.voicePlayer.play(driver?.persona ?: "friend", scenario) } },
                         onImport = { scenario -> importTarget = (driver?.persona ?: "friend") to scenario.id; filePicker.launch(arrayOf("audio/*")) })
-                    3 -> SettingsScreen(app, prefs, monitor, driver, message)
+                    3 -> SettingsScreen(app, prefs, displayedMonitor, driver, message)
                 }
             }
             HorizontalDivider(color = Line)

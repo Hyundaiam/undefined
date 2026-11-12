@@ -2,7 +2,7 @@
   "packageName": "io.hyundaiam.gyeot",
   "appDescription": "A driving companion that monitors available vehicle signals and tracks local driving habits.",
   "invokeWord": "곁",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "actionCalls": [
     {
       "type": "function",

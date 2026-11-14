@@ -1,0 +1,8 @@
+{
+  "fingerprint": "38a2f9ad4ebdad76af58c3b11d840812635c362f02b38ff5a736f67be8934b8b",
+  "text": "문 꼭 닫았네! 이제 가자!",
+  "seconds": 2.8,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "f593320bb64824c265803ce6a41d92837b67d3a51091ac26ed93476903e22b99"
+}

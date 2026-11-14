@@ -4,6 +4,14 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SpeedCoachingTest {
+    @Test fun speedingDoesNotWaitForANonSpeedWarningCooldown() {
+        val gate = SpeechGate()
+        gate.markPlayed(Tone.CAUTION, 1_000)
+        assertFalse(gate.canSpeak(Tone.CAUTION, 2_000))
+        assertTrue(gate.canSpeak(Tone.CAUTION, 2_000, urgent = true))
+        gate.markPlayed(Tone.CAUTION, 2_000, urgent = true)
+        assertFalse(gate.canSpeak(Tone.CAUTION, 3_000, urgent = true))
+    }
     private fun frame(t: Long, speed: Double, limit: Double? = 60.0) = SignalFrame(t, SignalSource.EMULATOR, speedKph = speed, speedLimitKph = limit, speedTimeMs = t, speedLimitTimeMs = t)
     @Test fun oneKphAboveSixtyTriggersAfterTwoSecondsButSixtyDoesNot() {
         val engine = CoachEngine()

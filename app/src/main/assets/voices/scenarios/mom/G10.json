@@ -1,0 +1,8 @@
+{
+  "fingerprint": "57b40862d76cdc0817f4b2b65fe0ba7e5109be209fd605614401019c64cc3469",
+  "text": "터널에서 창문 닫아줘서 고마워.",
+  "seconds": 3.04,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "4a672ead62c0f055fb5b73bc30fa1d13aa8757503f87cdeffee0dc384dc11324"
+}

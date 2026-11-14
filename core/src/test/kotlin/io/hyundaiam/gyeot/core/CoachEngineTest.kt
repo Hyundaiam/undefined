@@ -5,10 +5,10 @@ import org.junit.Test
 import java.io.File
 
 class CoachEngineTest {
-    @Test fun recordingCatalogContainsExactlyFifteenGoodAndFifteenCautionSituations() {
+    @Test fun recordingCatalogContainsExactlyTwentyFiveGoodAndTwentyFiveCautionSituations() {
         val catalog = ScenarioCatalog.parse(File(System.getProperty("catalogPath")).readText())
-        assertEquals(15, catalog.scenarios.count { it.tone == Tone.GOOD })
-        assertEquals(15, catalog.scenarios.count { it.tone == Tone.CAUTION })
+        assertEquals(25, catalog.scenarios.count { it.tone == Tone.GOOD })
+        assertEquals(25, catalog.scenarios.count { it.tone == Tone.CAUTION })
         assertEquals(8, catalog.scenarios.count { it.tone == Tone.COMMON })
         assertTrue(catalog.scenarios.all { it.recordingText.isNotBlank() && it.trigger.isNotBlank() })
     }

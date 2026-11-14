@@ -1,0 +1,8 @@
+{
+  "fingerprint": "0173eff5821cd1c5d3d8ca37c762b56a07ded2cec7d83ed96d685fecc01bb801",
+  "text": "차로 바꿀 땐 깜빡이부터 켜야지.",
+  "seconds": 2.48,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "435a4f4067b54582e068eaa22eee8745f8a14f0195dd176fb58051e84fd872f0"
+}

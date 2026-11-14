@@ -1,0 +1,8 @@
+{
+  "fingerprint": "cfd4fa9c4a3f70c57a81ad5b7b4e1d402935dd3cc614269ff58e598b04829d07",
+  "text": "너무 빨라! 속도 줄여 줘!",
+  "seconds": 2.4,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "fb7fd635124798033a7d177f76f73dad890e5d2bd4a96882df0f133851279744"
+}

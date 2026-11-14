@@ -1,0 +1,8 @@
+{
+  "fingerprint": "2669f42ea22d5fae1679706cd730a2a3c434576a21ecb3368a169972017ae143",
+  "text": "이놈아, 졸면서 가면 안 된다. 쉬어 가라.",
+  "seconds": 5.04,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "bd5a7c4f14f6f22f8ad4b3547fb66470da66103c9c050d595e9290e61a2eec05"
+}

@@ -1,0 +1,8 @@
+{
+  "fingerprint": "7191abfa308771d5ccb24cd60e4d180a84d63d917096895d2eb656a1eba519c6",
+  "text": "이놈아, 밤길이다. 앞차한테 바짝 붙지 마라.",
+  "seconds": 5.68,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "99df084dc74449bb0656f093dfffaf8cb06fbb25ae68684e202ea798307d0d49"
+}

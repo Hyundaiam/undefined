@@ -1,0 +1,8 @@
+{
+  "fingerprint": "6ad0a26f63ad3becbb7af2668fb02cd6dc9392c749ff700974f3b7bc5e031b89",
+  "text": "뒤에 긴급차량 온다. 주변 보고 길 비켜주자.",
+  "seconds": 4.4,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "f7008499f2169647428fdbcde353c50aa698748d704fe9cdf84b82d40660531c"
+}

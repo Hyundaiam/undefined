@@ -1,0 +1,8 @@
+{
+  "fingerprint": "a57e1b3abb7f7c7039f95c8c435a34e5446434c6a72ca3db9a30f0d8dd2c922c",
+  "text": "굽은 길인데 너무 빠르다. 미리 줄이자.",
+  "seconds": 3.68,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "cf1180645a4bb5ffbdc595a0ab0e42b1d3223118efd7820f4d5c12d4c98f7a80"
+}

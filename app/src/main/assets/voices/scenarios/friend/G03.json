@@ -1,0 +1,8 @@
+{
+  "fingerprint": "c192a6f030a0e9350d6628924da1b7389b011a7ae3b7efeb56c1b047fc72a854",
+  "text": "출발 부드럽네. 운전 좀 하는데?",
+  "seconds": 3.2,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "040dac2ce4921a6bd0aa12bd235d8c369de65526b8b175ea956bf28906ba5d4c"
+}

@@ -1,0 +1,8 @@
+{
+  "fingerprint": "fd40e79724c6bf8001dc65b09f63fea8e179c5628d1dadc67b2fe18868efb00b",
+  "text": "갑자기 멈춰서 깜짝 놀랐어!",
+  "seconds": 2.32,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "02eacd013f82c09aec1b004a7ccbc9dc5fa0828f32e4b3163c401e54c024f03e"
+}

@@ -1,0 +1,8 @@
+{
+  "fingerprint": "6f48d9b93635b425d88f01ef4de986775136ceb56f1334ae6b014e5e4080babb",
+  "text": "앞에 굽은 길이야. 들어가기 전에 속도 줄여줘.",
+  "seconds": 4.64,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "d4bbce00f9fb04714a9b4c577e616e40212bae03939ba4d9f739189a349bde9c"
+}

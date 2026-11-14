@@ -1,0 +1,8 @@
+{
+  "fingerprint": "2c61d54ae157d6acbe4b8bc4cf92c4d23b03ddebc6d34292e853536294784c79",
+  "text": "이놈아, 빨간불이다. 정지선부터 잘 봐라.",
+  "seconds": 5.36,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "88fee71a88e0430709fdc8c4abf40637d294dcb87951f1440b571f50ac200e07"
+}

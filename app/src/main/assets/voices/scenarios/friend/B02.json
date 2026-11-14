@@ -1,0 +1,8 @@
+{
+  "fingerprint": "417f7456615f5f83f274f63a71a4eb875f7a8c5d6644461d49153488e6349619",
+  "text": "지금 제한 속도 넘었다. 속도 좀 줄이자.",
+  "seconds": 3.84,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "be7de79d1f3697b10c44ef2e0922da8dcd8132c4a7c039b760b9c534eec06c79"
+}

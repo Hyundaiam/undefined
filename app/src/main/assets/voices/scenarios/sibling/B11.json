@@ -1,0 +1,8 @@
+{
+  "fingerprint": "73e34973014cd6a7f12d014cb76fa56060180976d751ca803d80890de2e07ae9",
+  "text": "한 손만 잡았어! 두 손으로 잡아 줘!",
+  "seconds": 3.44,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "013315100982a12a4e8b2d52e35103fccc2f217c8a2e6789a1bd8f2b31e7065b"
+}

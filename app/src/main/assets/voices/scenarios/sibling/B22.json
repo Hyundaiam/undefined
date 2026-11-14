@@ -1,0 +1,8 @@
+{
+  "fingerprint": "1904d7c3e2566c2643efe2f28f38746b978b3856ec400be0e172aca47d150b6e",
+  "text": "문이 열렸어! 멈추고 닫아 줘!",
+  "seconds": 2.96,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "2ce1c6810198a8b0530c7ebe8cfc9bd67cbe58a2a60f5b1f6f3ccbe5adfeed38"
+}

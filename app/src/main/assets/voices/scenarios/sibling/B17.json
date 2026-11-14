@@ -1,0 +1,8 @@
+{
+  "fingerprint": "40172c21f53fa4913d7d98584f4c59a563b486c588c00c3749ffa6b351eb850a",
+  "text": "빨간불이야! 멈춰 줘!",
+  "seconds": 2.64,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "3f7bf9244a5a84cc0921894a009fce2aedb3792d1171039542810f07d084268b"
+}

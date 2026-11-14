@@ -1,0 +1,8 @@
+{
+  "fingerprint": "f8731a1c676d18acfcbec4b477cd80d0e82c9847815be990b5e07d36f3fb1b2b",
+  "text": "길 가운데로 잘 가네! 좋아!",
+  "seconds": 2.88,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "620c58ae861153da2646d7e05d64ca485dd98e51ded9ddbcb21c93384c16a982"
+}

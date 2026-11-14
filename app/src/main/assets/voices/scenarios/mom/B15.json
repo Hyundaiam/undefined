@@ -1,0 +1,8 @@
+{
+  "fingerprint": "089d353e4cd559554d10c0dd858f5a6ccb1be2e537ca5d96c7991f0590f3c913",
+  "text": "내리기 전에 주차 상태와 시동을 다시 확인해줘.",
+  "seconds": 4.08,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "95fb2442b38b2012046549b49766aa36453152640d69528d014d6a240a953af3"
+}

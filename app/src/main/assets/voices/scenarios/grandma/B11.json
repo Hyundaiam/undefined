@@ -1,0 +1,8 @@
+{
+  "fingerprint": "9c0d20b5ff9b441c6f886bbfc1b473ae88b2f2d8c79a9545068e6a95572e6637",
+  "text": "이놈아, 두 손으로 똑바로 잡아라.",
+  "seconds": 3.2,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "46d2d4a7e236ec4750352edabd0366157fc1357668fc02279869327f51edf899"
+}

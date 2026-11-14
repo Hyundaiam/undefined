@@ -1,0 +1,8 @@
+{
+  "fingerprint": "19ab6d21208ded82495cc46ac2b6bf49fe3ae87b0f53b5aaf2c2789d6813f93a",
+  "text": "보행자에게 양보해줘서 고마워.",
+  "seconds": 2.72,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "14f668416056132d0f8e3fe7cbb3827f1716f0a19ea28dbfb23cda4698c3bdd8"
+}

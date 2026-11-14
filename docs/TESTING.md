@@ -1,20 +1,23 @@
 # 검증 기록
 
-검증 환경: macOS Apple Silicon, Java 17, Gradle 8.9, Android SDK 35. 2026-11-14 KST에 공식 Pleos Connect 2.1.0 / Android API 34 ARM64에서 v0.2.0을 검증했습니다.
+검증 환경: macOS Apple Silicon, Java 17, Gradle 8.9, Android SDK 35. 2026-11-14 KST에 공식 Pleos Connect 2.1.0 / Android API 34 ARM64에서 v0.3.0을 검증했습니다.
 
 ## 자동 검증
 
 | 검증 | 범위 |
 | --- | --- |
-| 코어 JVM 17개 | 15+15 카탈로그, 신호 신선도/출처, 벨트/급제동 조건, 통계, 제한 초과 2초·감속 3초·재경고, 누락 제한속도, 도로 제한 변경 시 가짜 개선 방지, 음성 간격/우선순위 |
+| 코어 JVM 68개 | 25+25 카탈로그, 모든 50개 센서 시퀀스가 해당 상황만 판정하는지 검사, 신호 신선도/출처, 벨트/급제동 조건, 통계, 과속/감속, 음성 간격/우선순위 |
 | Gleo JVM 4개 | Action JSON/이중 인코딩, Callback 문자열, 잘못된 입력 거부, 명시적 패키지 형식 |
 | Android 기기 5개 | DB 재오픈/운전자/시연 분리, 타 운전자 이벤트 거부, 중단 주행 복구, 잘못된 음성 파일 등록 시 기존 파일 유지, 화면을 내린 뒤 서비스 유지 |
 | Pleos 전용 2개 | 실제 SDK 속도·기어·창문·벨트 수신, 미제공 신호의 null 유지, 백그라운드 신호 갱신·저장 |
 | 주행 중 음성 1개 | 공식 콘솔의 가속/감속으로 60 시험도로 과속 B02·회복 C06 음성 진행, 실제 UX 제한 아래 화면 유지, 주행 화면을 종료한 뒤 재과속 음성, 시험 출처 분리 |
-| 계약 검사 | 38개 녹음 슬롯/파일/manifest, Gleo 3함수, 제어 권한/시스템 TTS 미사용, 주행/설정 Activity 분리, PCM pre-roll |
+| 상황 음성 기기 53개 | 친구 목소리로 50개 센서 재현→DB 판정→실제 음성 트랙 진행. 나머지 3캐릭터도 B16을 각각 재현 |
+| Compose UI 1개 | 상황 선택만으로는 소리가 나지 않고, 센서 재현을 누르면 선택한 B17 판정과 음성이 나오는지 확인 |
+| 계약 검사 | 58개 녹음 슬롯/파일/manifest, 서로 다른 상황 음성 200개와 대사·해시·길이, Gleo 3함수, 제어 권한/시스템 TTS 미사용, 주행/설정 Activity 분리, PCM pre-roll |
+| 로컬 음성 내용 검사 | 한국어 ASR로 200개 전체 발화 확인, 5개 수정 후 재검사. 연기/자연스러움의 인증은 아님 |
 | Android Lint·APK | debug 정적 검사, 앱/기기 테스트 APK 생성 |
 
-코어 17 + Gleo 4 + 기기 8 = 총 29개입니다. Pleos/주행 음성 테스트는 명시적으로 켠 경우에만 실행합니다. 일반 CI는 JVM 검사·Lint·앱 및 기기 테스트 APK 빌드까지 수행합니다.
+코어 68 + Gleo 4 = JVM 72개입니다. 기기 검증은 기본 7개, 50상황 음성 53개, UI 1개, 주행 음성 1개로 62개입니다. 합계 134개입니다. Pleos/상황 음성 테스트는 명시적으로 켠 경우에만 실행합니다. 일반 CI는 JVM 검사·Lint·앱 및 기기 테스트 APK 빌드까지 수행합니다.
 
 ```sh
 python3 scripts/verify_contracts.py
@@ -50,6 +53,14 @@ adb -s emulator-5556 install -r app/build/outputs/apk/androidTest/debug/app-debu
 adb -s emulator-5556 forward tcp:8089 tcp:8088
 adb -s emulator-5556 shell am instrument -w -r -e class io.hyundaiam.gyeot.LocalLearningTest,io.hyundaiam.gyeot.RecordingAndServiceTest,io.hyundaiam.gyeot.PleosRuntimeTest -e pleosIntegration true io.hyundaiam.gyeot.test/androidx.test.runner.AndroidJUnitRunner
 ```
+
+50개 전체 음성과 UI를 확인하려면 같은 QA AVD에 설치한 뒤 실행합니다. 선택하는 ID는 센서 시퀀스만 고르고, 판정 결과를 직접 저장하거나 직접 재생하지 않습니다.
+
+```sh
+adb -s emulator-5556 shell am instrument -w -r -e class io.hyundaiam.gyeot.ScenarioVoiceTest,io.hyundaiam.gyeot.SimulatorPanelTest -e scenarioVoices true io.hyundaiam.gyeot.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+`GyeotScenarioTest` 로그의 `sensor -> verdict -> voice position advanced`와 54개 성공을 확인합니다. UI 테스트는 앱 내부에 `scenario-panel.png`를 저장합니다.
 
 기기 번호는 실제 QA AVD에 맞게 바꿉니다. Pleos의 활성 운전자는 시스템 사용자 0과 다를 수 있어 테스트 내부에서도 `pm grant --user current`로 속도 권한을 설정합니다.
 

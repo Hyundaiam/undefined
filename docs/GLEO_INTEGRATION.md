@@ -2,6 +2,8 @@
 
 공식 Gleo Interface는 사용자 음성 명령을 처리하는 function calling 방식입니다. 앱이 센서 이벤트를 계속 전송해 Gleo 판단을 요청하는 추론 API와는 구분됩니다. 이 저장소는 공개된 App Schema, Action, Callback 규격을 구현합니다.
 
+2026-11-14에 Core Concepts, Android Action/Callback 예시, Schema 전달/승인 절차, Radio Use Case, SDK Overview를 다시 확인했습니다. Gleo AI 연동 자체는 공개되어 있지만 **앱에서 센서 이벤트를 보내 자율적인 판단·피드백을 생성하도록 호출하는 API**는 이 공개 문서들에서 찾지 못했습니다. 사용자 요청의 대안에 따라 v0.3.0은 좋은 25개·주의 25개의 규칙과 네 캐릭터의 상황별 임시 음성 200개를 사용합니다. Gleo가 판단한 결과로 표시하지 않습니다.
+
 ## 제공 함수
 
 `app/src/main/assets/schema.json`에 세 가지를 선언합니다. `component: service`는 가이드에 따라 BroadcastReceiver로 수신합니다. 세 함수는 모두 데이터 조회이며 운전자 변경·주행 시작·차량 제어는 하지 않습니다.
@@ -10,9 +12,9 @@
 | --- | --- |
 | GET_DRIVING_CONTEXT | 현재 선택 운전자의 진행 중인 세션, 속도/제한 속도, 최근 로컬 코칭 후보와 근거 |
 | GET_DRIVING_PROGRESS | 해당 운전자·입력 출처의 좋은/주의 이벤트 수와 습관별 집계 |
-| GET_RECORDING_STATUS | 캐릭터당 기본 30/공통 8슬롯, 개인 파일/포함된 사람 녹음 수 |
+| GET_RECORDING_STATUS | 캐릭터당 기본 50/공통 8슬롯, 개인 파일/포함된 사람 녹음 수, 포함된 상황 음성 200개 |
 
-이름·좌표·녹음 파일은 보내지 않습니다. 응답에는 DEMO/PLEOS 출처를 포함합니다. 코칭 후보는 `LOCAL_RULES_NOT_GLEO`로 명시합니다. 임의의 AI 확정 판정으로 포장하지 않습니다.
+이름·좌표·녹음 파일은 보내지 않습니다. 응답에는 DEMO/EMULATOR/PLEOS 출처를 포함합니다. 코칭 후보는 `LOCAL_RULES_NOT_GLEO`로 명시합니다. 임의의 AI 확정 판정으로 포장하지 않습니다.
 
 ## 연결 순서
 

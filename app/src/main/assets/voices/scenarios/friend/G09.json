@@ -1,0 +1,8 @@
+{
+  "fingerprint": "f43283306397ce0e1597708283c0f2f6599c0618fe07a8e37ac83357f382a561",
+  "text": "빗길인데 거리랑 속도 잘 챙기네.",
+  "seconds": 2.88,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "911a93f41059d4249af1f39d1f1a6f752e1a84f2c1ea8486c8269d5ae02ef8ab"
+}

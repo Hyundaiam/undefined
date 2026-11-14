@@ -1,0 +1,8 @@
+{
+  "fingerprint": "4b360e8bfb4ace188acd57346f81501f074f1452f030302770398ca85058b825",
+  "text": "밤이라 앞이 잘 안 보일 수 있어. 거리를 더 두자.",
+  "seconds": 5.04,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "05530fea4b6546d189899e4fe6c4df78d0c5b3f1e1ca5a60e1119d34004736a3"
+}

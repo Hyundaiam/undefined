@@ -1,0 +1,8 @@
+{
+  "fingerprint": "4b717be281fb14a1393f8a216a60b36fa7590dce44942326ac563fa8ef5f410a",
+  "text": "이놈아, 출발부터 왜 그리 급하냐.",
+  "seconds": 4.0,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "0cea60b3115ad7cca22b8a9c22a6a34e03842908d1258b2a4023aa4240807620"
+}

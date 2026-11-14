@@ -1,0 +1,8 @@
+{
+  "fingerprint": "e2be6999b9864dbe710ba572f3b1f10724be922b4adc5834aee278845e5b32ef",
+  "text": "이놈아, 옆에 차가 있는데 어딜 들어가냐.",
+  "seconds": 4.16,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "4a66deb79fe0f22dd3f0b23a2ed49e6998c45a23ceb06ed837fe6664acda54d2"
+}

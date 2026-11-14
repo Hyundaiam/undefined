@@ -1,0 +1,8 @@
+{
+  "fingerprint": "74fb3efab464621257c5988b0d0e1996714ccd19ab9094794a58c1f152abdb28",
+  "text": "밤이라 잘 안 보인다. 앞차랑 좀 더 띄우자.",
+  "seconds": 3.52,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "15e26ec4cab6218f911a13c120c9bca028f696b55eddcd7285f561c7a924ac3a"
+}

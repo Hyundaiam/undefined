@@ -1,0 +1,8 @@
+{
+  "fingerprint": "7b8e75f0ffcea1ffc224cb6e45bf9ce615555dccc31b0539aff18728b55cba59",
+  "text": "차선에서 벗어나고 있어. 앞을 보고 천천히 잡아줘.",
+  "seconds": 5.28,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "44806b36adc1286c6d6393306cfb3fb0ab11e1e4e9c92b6b94393a5ef41482c8"
+}

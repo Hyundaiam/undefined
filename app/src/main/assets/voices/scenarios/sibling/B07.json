@@ -1,0 +1,8 @@
+{
+  "fingerprint": "191ecbd156d95e090288c314443e0e0fd0a2ba4437c2289711993f54e915858b",
+  "text": "차가 줄 밖으로 나가! 앞을 봐 줘!",
+  "seconds": 3.120041666666667,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "b76539ff067f8a9ac28e0e41e556e48e3b798ae39c3c47b49a5faaaeb986a322"
+}

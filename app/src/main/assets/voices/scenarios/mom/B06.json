@@ -1,0 +1,8 @@
+{
+  "fingerprint": "d9064ceecebf33ed937627f40c7ce7d334ec1ac110b4f76bbbe35ea1cfbce337",
+  "text": "차로 바꾸기 전에 방향지시등부터 켜줘.",
+  "seconds": 3.6,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "c148a76a4651310bef2ad4ca9fc886edb4469c5a2fbe49fa2b383fb8a9e33b92"
+}

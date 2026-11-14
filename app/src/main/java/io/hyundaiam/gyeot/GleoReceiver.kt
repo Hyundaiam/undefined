@@ -61,7 +61,7 @@ class GleoReceiver : BroadcastReceiver() {
                             }
                             "GET_RECORDING_STATUS" -> {
                                 val clips = app.dao.clips().first()
-                                payload.put("requiredDrivingSlotsPerPersona", 30).put("commonSlotsPerPersona", 8)
+                                payload.put("requiredDrivingSlotsPerPersona", 50).put("commonSlotsPerPersona", 8).put("bundledScenarioVoices", app.voicePlayer.scenarioVoiceCount())
                                     .put("personalRecordings", clips.size).put("bundledHumanRecordings", app.voicePlayer.packagedCount()).put("temporaryVoicesAvailable", true)
                             }
                         }

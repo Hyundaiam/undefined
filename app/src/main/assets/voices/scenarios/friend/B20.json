@@ -1,0 +1,8 @@
+{
+  "fingerprint": "b06219f0f8bc609c7287e8feca2680714eb69e00dde51d2834a83148e2679057",
+  "text": "옆에 차 있다. 지금 차로 바꾸면 안 된다.",
+  "seconds": 4.16,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "561e1c0bf8b399d3607f64864aafc45c7f4abfe2e26bcdf9be2e731b3940113f"
+}

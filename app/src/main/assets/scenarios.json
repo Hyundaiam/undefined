@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "scenarios": [
     {
       "id": "G01",
@@ -7,12 +7,14 @@
       "category": "distance",
       "tone": "GOOD",
       "trigger": "앞차와 시간 차간거리 여유를 유지",
-      "recordingText": "앞차와 거리 잘 두고 있네. 여유 있게 가니까 좋다.",
+      "recordingText": "앞차랑 거리 잘 띄웠네. 느긋하게 가자.",
       "requiredSignals": [
         "front_distance",
         "vehicle_speed"
       ],
-      "legacyClip": "cruise"
+      "legacyClip": "cruise",
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G01 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "B01",
@@ -20,12 +22,14 @@
       "category": "distance",
       "tone": "CAUTION",
       "trigger": "짧은 시간 차간거리가 지속",
-      "recordingText": "앞차랑 가까워졌어. 거리를 조금 더 벌려줘.",
+      "recordingText": "앞차랑 너무 가깝다 아이가. 좀 띄우자.",
       "requiredSignals": [
         "front_distance",
         "vehicle_speed"
       ],
-      "legacyClip": "distance"
+      "legacyClip": "distance",
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B01 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "G02",
@@ -33,12 +37,14 @@
       "category": "speed",
       "tone": "GOOD",
       "trigger": "확인된 도로 제한 속도 이하로 주행",
-      "recordingText": "이 도로 속도 잘 지키고 있네. 이대로 안전하게 가자.",
+      "recordingText": "속도 딱 잘 지키네. 지금처럼 가자.",
       "requiredSignals": [
         "vehicle_speed",
         "road_speed_limit"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "SDK_AND_FIXTURE",
+      "simulationSteps": "50상황 재현 → G02 선택 → 센서 재현. 공식 콘솔의 해당 차량 신호로도 자동 감지."
     },
     {
       "id": "B02",
@@ -46,12 +52,14 @@
       "category": "speed",
       "tone": "CAUTION",
       "trigger": "도로 제한 속도보다 빠르게 주행",
-      "recordingText": "지금 제한 속도보다 빨라. 속도를 낮춰줘.",
+      "recordingText": "지금 제한 속도 넘었다. 속도 좀 줄이자.",
       "requiredSignals": [
         "vehicle_speed",
         "road_speed_limit"
       ],
-      "legacyClip": "speed"
+      "legacyClip": "speed",
+      "simulationSupport": "SDK_AND_FIXTURE",
+      "simulationSteps": "50상황 재현 → B02 선택 → 센서 재현. 공식 콘솔의 해당 차량 신호로도 자동 감지."
     },
     {
       "id": "G03",
@@ -59,11 +67,13 @@
       "category": "acceleration",
       "tone": "GOOD",
       "trigger": "급격하지 않은 속도 증가로 출발",
-      "recordingText": "출발이 부드러웠어. 같이 타는 사람도 편안하겠다.",
+      "recordingText": "출발 부드럽네. 운전 좀 하는데?",
       "requiredSignals": [
         "vehicle_speed"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "SDK_AND_FIXTURE",
+      "simulationSteps": "50상황 재현 → G03 선택 → 센서 재현. 공식 콘솔의 해당 차량 신호로도 자동 감지."
     },
     {
       "id": "B03",
@@ -71,11 +81,13 @@
       "category": "acceleration",
       "tone": "CAUTION",
       "trigger": "속도가 짧은 시간에 급격하게 증가",
-      "recordingText": "출발이 조금 급했어. 천천히 가속해줘.",
+      "recordingText": "출발 너무 급하다. 액셀 살살 밟자.",
       "requiredSignals": [
         "vehicle_speed"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "SDK_AND_FIXTURE",
+      "simulationSteps": "50상황 재현 → B03 선택 → 센서 재현. 공식 콘솔의 해당 차량 신호로도 자동 감지."
     },
     {
       "id": "G04",
@@ -83,12 +95,14 @@
       "category": "braking",
       "tone": "GOOD",
       "trigger": "여유 있게 감속해 부드럽게 정지",
-      "recordingText": "미리 속도 줄인 덕분에 편안하게 멈췄네. 잘했어.",
+      "recordingText": "미리 줄여서 부드럽게 섰네. 잘했다.",
       "requiredSignals": [
         "vehicle_speed",
         "emergency_context"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "SDK_AND_FIXTURE",
+      "simulationSteps": "50상황 재현 → G04 선택 → 센서 재현. 공식 콘솔의 해당 차량 신호로도 자동 감지."
     },
     {
       "id": "B04",
@@ -96,12 +110,14 @@
       "category": "braking",
       "tone": "CAUTION",
       "trigger": "불가피한 회피 상황을 제외하고 급제동이 반복",
-      "recordingText": "방금 멈추는 게 급했어. 앞 상황을 조금 더 일찍 살펴보자.",
+      "recordingText": "방금 브레이크 급했다. 앞을 미리 보고 가자.",
       "requiredSignals": [
         "vehicle_speed",
         "emergency_context"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B04 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "G05",
@@ -109,12 +125,14 @@
       "category": "corner",
       "tone": "GOOD",
       "trigger": "굽은 길에 들어가기 전에 감속",
-      "recordingText": "방금 코너 정말 부드러웠어. 차분하게 잘 돌았네.",
+      "recordingText": "코너 전에 잘 줄였네. 부드럽게 돌자.",
       "requiredSignals": [
         "vehicle_speed",
         "curve_context"
       ],
-      "legacyClip": "praise"
+      "legacyClip": "praise",
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G05 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "B05",
@@ -122,12 +140,14 @@
       "category": "corner",
       "tone": "CAUTION",
       "trigger": "곡선 구간의 확인된 권장 속도보다 빠르게 진입",
-      "recordingText": "앞에 굽은 길이 있어. 들어가기 전에 속도를 줄여줘.",
+      "recordingText": "굽은 길인데 너무 빠르다. 미리 줄이자.",
       "requiredSignals": [
         "vehicle_speed",
         "curve_context"
       ],
-      "legacyClip": "corner"
+      "legacyClip": "corner",
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B05 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "G06",
@@ -135,12 +155,14 @@
       "category": "indicator",
       "tone": "GOOD",
       "trigger": "방향지시등을 켠 뒤 차로 변경",
-      "recordingText": "방향지시등 먼저 켜줬네. 뒤차도 알아보기 좋았겠다.",
+      "recordingText": "깜빡이 먼저 켰네. 뒤차도 알겠다.",
       "requiredSignals": [
         "turn_signal",
         "lane_change"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G06 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "B06",
@@ -148,12 +170,14 @@
       "category": "indicator",
       "tone": "CAUTION",
       "trigger": "확인된 차로 변경 때 방향지시등이 꺼져 있음",
-      "recordingText": "차로 바꾸기 전에는 방향지시등부터 켜줘.",
+      "recordingText": "차로 바꿀 땐 깜빡이부터 켜야지.",
       "requiredSignals": [
         "turn_signal",
         "lane_change"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B06 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "G07",
@@ -161,11 +185,13 @@
       "category": "lane",
       "tone": "GOOD",
       "trigger": "차선 안에서 안정적으로 주행",
-      "recordingText": "차선 안에서 안정적으로 가고 있네. 지금 좋아.",
+      "recordingText": "차선 안에서 안정적으로 가네. 좋다.",
       "requiredSignals": [
         "lane_perception"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G07 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "B07",
@@ -173,11 +199,13 @@
       "category": "lane",
       "tone": "CAUTION",
       "trigger": "차선 변경 의사 없이 차선을 벗어나는 움직임",
-      "recordingText": "차선에서 벗어나고 있어. 앞을 보고 차분하게 주행해줘.",
+      "recordingText": "차선 벗어나고 있다. 앞에 집중하자.",
       "requiredSignals": [
         "lane_perception"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B07 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "G08",
@@ -185,13 +213,15 @@
       "category": "pedestrian",
       "tone": "GOOD",
       "trigger": "확인된 보행자 접근에 미리 감속하고 양보",
-      "recordingText": "보행자 보고 미리 속도 줄여줬네. 좋은 운전이야.",
+      "recordingText": "사람 보고 미리 멈췄네. 잘했다.",
       "requiredSignals": [
         "pedestrian_perception",
         "crosswalk_context",
         "vehicle_speed"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G08 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "B08",
@@ -199,13 +229,15 @@
       "category": "pedestrian",
       "tone": "CAUTION",
       "trigger": "확인된 보행자와 횡단보도 상황에서 감속하지 않음",
-      "recordingText": "앞에 보행자가 있어. 속도를 줄이고 주변을 살펴줘.",
+      "recordingText": "앞에 사람 있다. 속도 줄이고 양보하자.",
       "requiredSignals": [
         "pedestrian_perception",
         "crosswalk_context",
         "vehicle_speed"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B08 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "G09",
@@ -213,13 +245,15 @@
       "category": "weather",
       "tone": "GOOD",
       "trigger": "비 오는 구간에서 속도와 차간거리 여유 확보",
-      "recordingText": "비 오는 길인데 여유 있게 가고 있네. 잘하고 있어.",
+      "recordingText": "빗길인데 거리랑 속도 잘 챙기네.",
       "requiredSignals": [
         "weather_context",
         "vehicle_speed",
         "front_distance"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G09 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "B09",
@@ -227,13 +261,15 @@
       "category": "weather",
       "tone": "CAUTION",
       "trigger": "확인된 젖은 도로 상황에 맞지 않는 속도나 거리",
-      "recordingText": "길이 젖어 있어. 속도를 줄이고 앞차와 더 여유를 둬.",
+      "recordingText": "길 젖었다. 속도 줄이고 더 띄워 가자.",
       "requiredSignals": [
         "weather_context",
         "vehicle_speed",
         "front_distance"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B09 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "G10",
@@ -241,12 +277,14 @@
       "category": "tunnel",
       "tone": "GOOD",
       "trigger": "터널 구간 진입 전 창문을 닫음",
-      "recordingText": "터널 들어가기 전에 창문 챙겼네. 잘했어.",
+      "recordingText": "터널 전에 창문 잘 닫았네. 센스 있다.",
       "requiredSignals": [
         "tunnel_context",
         "window_position"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G10 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "B10",
@@ -254,12 +292,14 @@
       "category": "tunnel",
       "tone": "CAUTION",
       "trigger": "확인된 터널 구간에서 창문이 열려 있음",
-      "recordingText": "이제 터널이야. 열려 있는 창문을 확인해줘.",
+      "recordingText": "터널 들어왔다. 열린 창문 확인하자.",
       "requiredSignals": [
         "tunnel_context",
         "window_position"
       ],
-      "legacyClip": "tunnel"
+      "legacyClip": "tunnel",
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B10 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "G11",
@@ -267,12 +307,14 @@
       "category": "hands",
       "tone": "GOOD",
       "trigger": "일반 주행에서 양손으로 핸들 유지",
-      "recordingText": "두 손으로 안정적으로 잡고 있네. 지금처럼 해줘.",
+      "recordingText": "양손으로 잘 잡고 있네. 안정적이다.",
       "requiredSignals": [
         "cabin_hands_perception",
         "vehicle_speed"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G11 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "B11",
@@ -280,12 +322,14 @@
       "category": "hands",
       "tone": "CAUTION",
       "trigger": "변속 등 일시적인 조작을 제외하고 한 손 운전이 지속",
-      "recordingText": "한 손으로 계속 운전하고 있어. 두 손으로 잡아줘.",
+      "recordingText": "한 손으로 계속 가네. 양손으로 잡자.",
       "requiredSignals": [
         "cabin_hands_perception",
         "vehicle_speed"
       ],
-      "legacyClip": "posture"
+      "legacyClip": "posture",
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B11 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "G12",
@@ -293,12 +337,14 @@
       "category": "pedals",
       "tone": "GOOD",
       "trigger": "자동변속 차량에서 확인된 올바른 발 위치 유지",
-      "recordingText": "페달 조작 습관 잘 지키고 있네. 차분하게 가자.",
+      "recordingText": "한 발로 페달 잘 다루네. 차분하게 가자.",
       "requiredSignals": [
         "pedal_foot_perception",
         "transmission_type"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G12 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "B12",
@@ -306,12 +352,14 @@
       "category": "pedals",
       "tone": "CAUTION",
       "trigger": "별도 발 위치 센서로 자동변속 차량 양발 조작이 확인됨",
-      "recordingText": "페달 조작 자세를 확인해줘. 안전한 곳에 멈춘 뒤 다시 점검하자.",
+      "recordingText": "자동변속인데 양발 쓰네. 안전한 데서 자세 확인하자.",
       "requiredSignals": [
         "pedal_foot_perception",
         "transmission_type"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B12 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "G13",
@@ -319,12 +367,14 @@
       "category": "seat",
       "tone": "GOOD",
       "trigger": "운전자 또는 동승자가 정차 중 정한 기준 좌석 자세 유지",
-      "recordingText": "의자 자세 잘 맞췄네. 편안하고 안정적으로 가자.",
+      "recordingText": "등록한 자세 잘 유지하네. 편하게 가자.",
       "requiredSignals": [
         "seat_backrest",
         "calibrated_seat_baseline"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "SDK_AND_FIXTURE",
+      "simulationSteps": "50상황 재현 → G13 선택 → 센서 재현. 공식 콘솔의 해당 차량 신호로도 자동 감지."
     },
     {
       "id": "B13",
@@ -332,12 +382,14 @@
       "category": "seat",
       "tone": "CAUTION",
       "trigger": "기준과 비교해 등받이가 지나치게 누워 있음",
-      "recordingText": "좌석 자세가 등록한 기준과 많이 달라졌어. 안전한 곳에 멈춘 뒤 확인해줘.",
+      "recordingText": "의자 자세 많이 달라졌다. 정차하고 확인하자.",
       "requiredSignals": [
         "seat_backrest",
         "calibrated_seat_baseline"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "SDK_AND_FIXTURE",
+      "simulationSteps": "50상황 재현 → B13 선택 → 센서 재현. 공식 콘솔의 해당 차량 신호로도 자동 감지."
     },
     {
       "id": "G14",
@@ -345,12 +397,14 @@
       "category": "belt",
       "tone": "GOOD",
       "trigger": "탑승이 확인된 좌석 모두 안전벨트를 착용",
-      "recordingText": "모두 안전벨트 잘 맸네. 이제 안전하게 출발하자.",
+      "recordingText": "다들 벨트 잘 맸네. 든든하다.",
       "requiredSignals": [
         "seat_occupancy",
         "seat_belt"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "SDK_AND_FIXTURE",
+      "simulationSteps": "50상황 재현 → G14 선택 → 센서 재현. 공식 콘솔의 해당 차량 신호로도 자동 감지."
     },
     {
       "id": "B14",
@@ -358,12 +412,14 @@
       "category": "belt",
       "tone": "CAUTION",
       "trigger": "출발 또는 주행 중 탑승 좌석의 안전벨트가 풀려 있음",
-      "recordingText": "안전벨트 안 맨 자리가 있어. 출발 전에 모두 확인해줘.",
+      "recordingText": "벨트 안 맨 자리 있다. 정차하고 확인하자.",
       "requiredSignals": [
         "seat_occupancy",
         "seat_belt"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "SDK_AND_FIXTURE",
+      "simulationSteps": "50상황 재현 → B14 선택 → 센서 재현. 공식 콘솔의 해당 차량 신호로도 자동 감지."
     },
     {
       "id": "G15",
@@ -371,13 +427,15 @@
       "category": "parking",
       "tone": "GOOD",
       "trigger": "완전히 정차한 뒤 주차 상태와 시동 종료 절차 확인",
-      "recordingText": "오늘도 수고했어. 주차 상태까지 확인했네. 다음에 또 같이 가자.",
+      "recordingText": "주차하고 시동까지 챙겼네. 오늘도 수고했다.",
       "requiredSignals": [
         "gear",
         "ignition_state",
         "parking_brake"
       ],
-      "legacyClip": "parking"
+      "legacyClip": "parking",
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G15 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "B15",
@@ -385,13 +443,339 @@
       "category": "parking",
       "tone": "CAUTION",
       "trigger": "목적지 도착 후 주차 상태 또는 종료 확인이 필요",
-      "recordingText": "내리기 전에 주차 상태랑 시동 종료를 한 번 더 확인해줘.",
+      "recordingText": "내리기 전에 주차랑 시동 다시 확인하자.",
       "requiredSignals": [
         "gear",
         "ignition_state",
         "parking_brake"
       ],
-      "legacyClip": null
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B15 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "G16",
+      "title": "어린이보호구역에서 감속",
+      "category": "school_zone",
+      "tone": "GOOD",
+      "trigger": "어린이보호구역에서 확인된 제한 이하로 유지",
+      "recordingText": "보호구역 아이가. 천천히 가는 거 좋네.",
+      "requiredSignals": [
+        "school_zone",
+        "road_speed_limit",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G16 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "B16",
+      "title": "보호구역 속도 주의",
+      "category": "school_zone",
+      "tone": "CAUTION",
+      "trigger": "어린이보호구역의 확인된 제한속도 초과",
+      "recordingText": "어린이보호구역이다. 속도 좀 낮추자.",
+      "requiredSignals": [
+        "school_zone",
+        "road_speed_limit",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B16 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "G17",
+      "title": "정지선 앞에서 정지",
+      "category": "stop_line",
+      "tone": "GOOD",
+      "trigger": "적색 신호에서 정지선 앞 완전 정지",
+      "recordingText": "정지선 앞에 딱 섰네. 깔끔하다.",
+      "requiredSignals": [
+        "traffic_light",
+        "stop_line",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G17 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "B17",
+      "title": "정지선 넘어 진행",
+      "category": "stop_line",
+      "tone": "CAUTION",
+      "trigger": "적색 신호에서 정지선을 넘어 진행",
+      "recordingText": "빨간불인데 선 넘었다. 차분하게 멈추자.",
+      "requiredSignals": [
+        "traffic_light",
+        "stop_line",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B17 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "G18",
+      "title": "야간에 넉넉한 안전거리",
+      "category": "night_distance",
+      "tone": "GOOD",
+      "trigger": "야간에 앞차와 시간 간격 3.5초 이상 유지",
+      "recordingText": "밤길인데 거리 넉넉히 뒀네. 든든하다.",
+      "requiredSignals": [
+        "night_context",
+        "front_distance",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G18 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "B18",
+      "title": "야간에 짧은 안전거리",
+      "category": "night_distance",
+      "tone": "CAUTION",
+      "trigger": "야간에 앞차와 시간 간격 2초 미만 지속",
+      "recordingText": "밤이라 잘 안 보인다. 앞차랑 좀 더 띄우자.",
+      "requiredSignals": [
+        "night_context",
+        "front_distance",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B18 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "G19",
+      "title": "긴급차량에 길 양보",
+      "category": "emergency_vehicle",
+      "tone": "GOOD",
+      "trigger": "접근하는 긴급차량에 양보 완료가 확인됨",
+      "recordingText": "구급차에 길 잘 비켜줬네. 잘했다.",
+      "requiredSignals": [
+        "emergency_vehicle",
+        "yield_context",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G19 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "B19",
+      "title": "긴급차량 양보 필요",
+      "category": "emergency_vehicle",
+      "tone": "CAUTION",
+      "trigger": "접근 긴급차량에 양보하지 않고 주행",
+      "recordingText": "뒤에 긴급차량 온다. 주변 보고 길 비켜주자.",
+      "requiredSignals": [
+        "emergency_vehicle",
+        "yield_context",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B19 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "G20",
+      "title": "사각지대 확인하며 대기",
+      "category": "blind_spot",
+      "tone": "GOOD",
+      "trigger": "방향지시등을 켠 뒤 사각지대 차량 때문에 변경 대기",
+      "recordingText": "옆에 차 보고 기다리네. 잘 보고 있데이.",
+      "requiredSignals": [
+        "blind_spot",
+        "lane_change",
+        "turn_signal",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G20 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "B20",
+      "title": "사각지대 차량 있는데 변경",
+      "category": "blind_spot",
+      "tone": "CAUTION",
+      "trigger": "사각지대 차량이 확인됐는데 차로 변경",
+      "recordingText": "옆에 차 있다. 지금 차로 바꾸면 안 된다.",
+      "requiredSignals": [
+        "blind_spot",
+        "lane_change",
+        "turn_signal",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B20 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "G21",
+      "title": "졸음 느끼고 휴식",
+      "category": "fatigue",
+      "tone": "GOOD",
+      "trigger": "졸음 확인 후 휴게 장소에 정차",
+      "recordingText": "졸릴 땐 쉬는 게 맞다. 잘 세웠네.",
+      "requiredSignals": [
+        "drowsiness",
+        "rest_stop",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G21 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "B21",
+      "title": "졸음 상태로 계속 주행",
+      "category": "fatigue",
+      "tone": "CAUTION",
+      "trigger": "졸음이 확인됐는데 계속 주행",
+      "recordingText": "졸린 거 같다. 안전한 데서 좀 쉬고 가자.",
+      "requiredSignals": [
+        "drowsiness",
+        "rest_stop",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B21 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "G22",
+      "title": "문 닫힘 확인 후 출발",
+      "category": "doors",
+      "tone": "GOOD",
+      "trigger": "모든 도어 닫힘이 확인된 뒤 주행",
+      "recordingText": "문 다 닫힌 거 확인했네. 출발 좋다.",
+      "requiredSignals": [
+        "door_state",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G22 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "B22",
+      "title": "문이 열린 채 주행",
+      "category": "doors",
+      "tone": "CAUTION",
+      "trigger": "열린 도어가 확인된 상태로 주행",
+      "recordingText": "문 덜 닫혔다. 안전한 데 멈추고 확인하자.",
+      "requiredSignals": [
+        "door_state",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B22 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "G23",
+      "title": "출발 전 타이어 상태 확인",
+      "category": "tires",
+      "tone": "GOOD",
+      "trigger": "정차 중 타이어 공기압 정상 상태 확인",
+      "recordingText": "타이어 상태 괜찮네. 확인하고 가니 좋다.",
+      "requiredSignals": [
+        "tire_pressure",
+        "vehicle_speed",
+        "gear"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G23 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "B23",
+      "title": "타이어 공기압 낮음",
+      "category": "tires",
+      "tone": "CAUTION",
+      "trigger": "낮은 타이어 공기압이 확인된 채 주행",
+      "recordingText": "타이어 공기압 낮다. 안전한 곳에서 점검하자.",
+      "requiredSignals": [
+        "tire_pressure",
+        "vehicle_speed",
+        "gear"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B23 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "G24",
+      "title": "이동 거리에 충분한 배터리",
+      "category": "range",
+      "tone": "GOOD",
+      "trigger": "예상 잔여 주행거리가 남은 경로보다 20km 이상 여유",
+      "recordingText": "목적지까지 배터리 여유 있네. 준비 잘했네.",
+      "requiredSignals": [
+        "ev_range",
+        "route_remaining",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G24 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "B24",
+      "title": "목적지까지 주행거리 부족",
+      "category": "range",
+      "tone": "CAUTION",
+      "trigger": "예상 잔여 주행거리가 남은 경로보다 부족",
+      "recordingText": "목적지까지 배터리 모자라겠다. 충전소부터 보자.",
+      "requiredSignals": [
+        "ev_range",
+        "route_remaining",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B24 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "G25",
+      "title": "합류 구간에서 여유 있게 진입",
+      "category": "merge",
+      "tone": "GOOD",
+      "trigger": "합류 구간에서 방향지시등과 2.5초 이상 간격 유지",
+      "recordingText": "합류할 때 거리 잘 뒀네. 여유 좋다.",
+      "requiredSignals": [
+        "merge_context",
+        "front_distance",
+        "lane_change",
+        "turn_signal",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → G25 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
+    },
+    {
+      "id": "B25",
+      "title": "합류 때 앞차에 가까이 진입",
+      "category": "merge",
+      "tone": "CAUTION",
+      "trigger": "합류 중 앞차와 1.5초 미만 간격",
+      "recordingText": "합류하는데 너무 붙었다. 앞차랑 간격 벌리자.",
+      "requiredSignals": [
+        "merge_context",
+        "front_distance",
+        "lane_change",
+        "turn_signal",
+        "vehicle_speed"
+      ],
+      "legacyClip": null,
+      "simulationSupport": "FIXTURE_ONLY",
+      "simulationSteps": "50상황 재현 → B25 선택 → 센서 재현. 외부 인지/도로 문맥은 곁의 명시적 시험 입력으로 재현."
     },
     {
       "id": "C01",

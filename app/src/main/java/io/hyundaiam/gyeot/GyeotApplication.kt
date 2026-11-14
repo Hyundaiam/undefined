@@ -16,6 +16,9 @@ data class MonitorUi(
     val source: SignalSource = SignalSource.DEMO,
     val feedback: String = "",
     val feedbackAt: Long? = null,
+    val replayId: String? = null,
+    val replayStage: String = "상황을 선택하고 센서 재현을 시작해 주세요",
+    val replayProgress: Float = 0f,
 )
 class GyeotApplication : Application() {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)

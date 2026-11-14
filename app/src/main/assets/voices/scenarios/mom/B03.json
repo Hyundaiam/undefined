@@ -1,0 +1,8 @@
+{
+  "fingerprint": "63b1f73fb43be00a8345b756a43fb7f155fde18a2d3a368cbeb33723e71f7ecb",
+  "text": "갑자기 빨라져서 놀랐어. 천천히 출발하자.",
+  "seconds": 4.64,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "0ee4eb113278133929f9cb9f3284e7a66abe3eb0d5b7b2b2bfa2d9085cf074a6"
+}

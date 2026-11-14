@@ -1,0 +1,8 @@
+{
+  "fingerprint": "f8e73437cecc6e178faf7dc35149ff60a815476a003a2a6f98c0047bae1e8bdc",
+  "text": "방향지시등 먼저 켜줘서 고마워.",
+  "seconds": 3.12,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "d4addf62ce86075ab8392651e7eff6e1afb044066f147780bfc81bc70de7ea08"
+}

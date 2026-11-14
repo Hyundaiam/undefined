@@ -1,0 +1,8 @@
+{
+  "fingerprint": "8c1d8362a6fa172667d3cf55cb01fd91ceaa08c8462ec1353959817bd1f3fc2a",
+  "text": "사람 먼저 보내주니 참 잘했다.",
+  "seconds": 2.8,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "b782a797103cbe5e6d27b6948def6e64cb22f9da125e9af314b94d2870839183"
+}

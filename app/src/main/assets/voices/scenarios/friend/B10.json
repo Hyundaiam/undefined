@@ -1,0 +1,8 @@
+{
+  "fingerprint": "455114b55e47626a39cc15901eee6d66f848c4e795731e049c5e58cda104ead1",
+  "text": "터널 들어왔다. 열린 창문 확인하자.",
+  "seconds": 3.84,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "f0bdb9c4e7947d9f783288cf576880256d63d78d6d1e99b28e37ddab747f25bd"
+}

@@ -33,9 +33,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import io.hyundaiam.gyeot.core.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -48,6 +50,13 @@ private data class StartRequest(val driver: Long, val demo: Boolean, val testLim
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (intent.getBooleanExtra("simulatorTest", false) && TestEnvironment.available) lifecycleScope.launch {
+            val app = application as GyeotApplication
+            app.ready.await()
+            app.settings.demo(true); app.settings.voice(true); app.settings.praise(true)
+            val prefs = app.settings.flow.first()
+            ContextCompat.startForegroundService(this@MainActivity, Intent(this@MainActivity, DrivingService::class.java).setAction(DrivingService.START).putExtra("driver", prefs.driverId).putExtra("demo", true))
+        }
         setContent {
             MaterialTheme(colorScheme = lightColorScheme(primary = Ink, onPrimary = Color.White, background = Paper, surface = Color.White, onSurface = Ink, secondaryContainer = Color(0xFFECECE7))) {
                 App(this, application as GyeotApplication)
@@ -160,6 +169,7 @@ private fun Heading(eyebrow: String, title: String, subtitle: String, action: @C
 }
 @Composable
 private fun DriveScreen(app: GyeotApplication, driver: DriverEntity?, prefs: Preferences, state: MonitorUi, clips: List<ClipEntity>, toggle: () -> Unit, speedTest: () -> Unit, simulate: (Scenario) -> Unit) {
+    if (prefs.demo) { ScenarioReplayScreen(app, driver, state, toggle, simulate); return }
     val scope = rememberCoroutineScope()
     var cautions by rememberSaveable { mutableStateOf(false) }
     val last = app.catalog.find(state.lastScenarioId ?: "C01")
@@ -191,21 +201,15 @@ private fun DriveScreen(app: GyeotApplication, driver: DriverEntity?, prefs: Pre
                 Column(Modifier.padding(25.dp), verticalArrangement = Arrangement.SpaceBetween) {
                     Row(verticalAlignment = Alignment.CenterVertically) { Avatar(persona); Spacer(Modifier.width(15.dp)); Column { Text("오늘의 드라이빙 메이트", color = Subtle, fontSize = 11.sp); Text(Personas.names[persona] ?: "친구", fontSize = 23.sp, modifier = Modifier.padding(top = 5.dp)) } }
                     val ownVoice = last?.let { s -> clips.any { it.persona == persona && it.scenarioId == s.id } || app.voicePlayer.hasPackaged(persona, s.id) } == true
-                    Text(if (!prefs.demo && state.feedback.isEmpty()) state.status else if (ownVoice) "내 목소리로 전하는 ${last?.title}" else last?.let { app.voicePlayer.legacyText(persona, it) ?: it.recordingText } ?: state.status, fontSize = 20.sp, lineHeight = 32.sp, fontWeight = FontWeight.Medium)
+                    Text(if (!prefs.demo && state.feedback.isEmpty()) state.status else if (ownVoice) "내 목소리로 전하는 ${last?.title}" else last?.let { app.voicePlayer.feedbackText(persona, it) } ?: state.status, fontSize = 20.sp, lineHeight = 32.sp, fontWeight = FontWeight.Medium)
                     Row(verticalAlignment = Alignment.CenterVertically) { Text(last?.id ?: "C01", fontSize = 10.sp, color = Subtle); Spacer(Modifier.weight(1f)); TextButton(onClick = { last?.let { scope.launch { app.voicePlayer.play(persona, it) } } }) { Icon(Icons.Outlined.VolumeUp, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("다시 듣기") } }
                 }
             }
         }
         Text("${if (state.frame?.speedLimitOrigin == "EMULATOR_TEST") "제한 속도: 에뮬레이터 시험값" else "제한 속도: 내비게이션 수신값"} · ${voiceMessage.ifEmpty { "음성 안내 대기" }}", fontSize = 12.sp, color = Subtle, modifier = Modifier.padding(top = 14.dp))
-        Row(Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) { Text(if (prefs.demo) "이런 순간, 곁은 어떻게 말할까요?" else "현재 연결 상태", fontSize = 17.sp, fontWeight = FontWeight.Medium); Text(state.status, color = Subtle, fontSize = 11.sp, modifier = Modifier.padding(top = 5.dp)) }
-            if (prefs.demo) { FilterChip(selected = !cautions, onClick = { cautions = false }, label = { Text("좋은 순간 15") }); Spacer(Modifier.width(8.dp)); FilterChip(selected = cautions, onClick = { cautions = true }, label = { Text("주의 순간 15") }) }
-        }
-        if (prefs.demo) LazyRow(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
-            items(app.catalog.scenarios.filter { it.tone == if (cautions) Tone.CAUTION else Tone.GOOD }) { s ->
-                OutlinedButton(onClick = { simulate(s) }, enabled = state.running, shape = RoundedCornerShape(8.dp)) { Text("${s.id}  ${s.title}", fontSize = 12.sp) }
-            }
-        } else CapabilityList(state.capabilities)
+        Text("현재 연결 상태", fontSize = 17.sp, modifier = Modifier.padding(top = 24.dp))
+        Text(state.status, fontSize = 12.sp, color = Subtle, modifier = Modifier.padding(vertical = 10.dp))
+        CapabilityList(state.capabilities)
     }
 }
 
@@ -254,7 +258,7 @@ private fun VoiceScreen(app: GyeotApplication, driver: DriverEntity?, clips: Lis
             }
         }
         Row(Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-            listOf("칭찬 15", "주의 · 잔소리 15", "공통 멘트 8").forEachIndexed { i, label -> FilterChip(group == i, { group = i }, { Text(label) }); Spacer(Modifier.width(8.dp)) }
+            listOf("칭찬 25", "주의 · 잔소리 25", "공통 멘트 8").forEachIndexed { i, label -> FilterChip(group == i, { group = i }, { Text(label) }); Spacer(Modifier.width(8.dp)) }
             Spacer(Modifier.weight(1f)); Text(message, fontSize = 11.sp, color = Subtle)
         }
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(bottom = 25.dp)) {
@@ -263,11 +267,10 @@ private fun VoiceScreen(app: GyeotApplication, driver: DriverEntity?, clips: Lis
                 Surface(color = Color.White, shape = RoundedCornerShape(10.dp), border = BorderStroke(1.dp, Line)) {
                     Row(Modifier.padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) { Text(s.id, fontSize = 11.sp, color = Subtle, modifier = Modifier.width(42.dp)); Text(s.title, fontSize = 17.sp, fontWeight = FontWeight.Medium); Spacer(Modifier.width(12.dp)); Text(if (custom) "내 녹음 등록됨" else if (s.legacyClip != null) "기존 임시 음성" else "녹음 대기", fontSize = 10.sp, color = Subtle) }
-                            Text(s.recordingText, fontSize = 13.sp, lineHeight = 21.sp, modifier = Modifier.padding(top = 8.dp, end = 18.dp))
-                            if (!custom && s.legacyClip != null) Text("임시 음성 대사: ${app.voicePlayer.legacyText(persona, s)}", fontSize = 10.sp, lineHeight = 17.sp, color = Subtle, modifier = Modifier.padding(top = 7.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) { Text(s.id, fontSize = 11.sp, color = Subtle, modifier = Modifier.width(42.dp)); Text(s.title, fontSize = 17.sp, fontWeight = FontWeight.Medium); Spacer(Modifier.width(12.dp)); Text(if (custom) "내 녹음 등록됨" else if (app.voicePlayer.hasScenarioVoice(persona,s.id) || s.legacyClip != null) "상황별 임시 음성" else "녹음 대기", fontSize = 10.sp, color = Subtle) }
+                            Text(app.voicePlayer.feedbackText(persona, s), fontSize = 13.sp, lineHeight = 21.sp, modifier = Modifier.padding(top = 8.dp, end = 18.dp))
                         }
-                        IconButton(onClick = { onPlay(s) }, enabled = custom || s.legacyClip != null) { Icon(Icons.Outlined.PlayCircleOutline, "${s.id} 미리 듣기") }
+                        IconButton(onClick = { onPlay(s) }, enabled = custom || app.voicePlayer.hasScenarioVoice(persona,s.id) || s.legacyClip != null) { Icon(Icons.Outlined.PlayCircleOutline, "${s.id} 미리 듣기") }
                         OutlinedButton(onClick = { onImport(s) }, enabled = editable, shape = RoundedCornerShape(7.dp)) { Icon(Icons.Outlined.UploadFile, null, Modifier.size(17.dp)); Spacer(Modifier.width(7.dp)); Text("녹음 파일", fontSize = 12.sp) }
                     }
                 }
@@ -283,7 +286,7 @@ private fun SettingsScreen(app: GyeotApplication, prefs: Preferences, state: Mon
     val editable = !state.running
     Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 25.dp)) {
         Heading("READY FOR PLEOS CONNECT", "연결하고, 나를 기억하기.", "주행 설정은 출발 전에 바꿔주세요. 데이터와 녹음은 이 기기에 저장됩니다.")
-        SettingRow("시연 모드", "켜면 30가지 예시 상황을 사용해요. 시연 학습은 실제 기록에 합쳐지지 않아요.", prefs.demo, editable) { scope.launch { app.settings.demo(it) } }
+        SettingRow("50상황 센서 재현", "좋은 상황 25개·주의 상황 25개. 합성 센서 입력을 규칙으로 판정하고 음성으로 안내해요. 실제 기록과 분리해요.", prefs.demo, editable) { scope.launch { app.settings.demo(it) } }
         if (TestEnvironment.available) SettingRow("에뮬레이터 시험도로 60", "차량 속도는 SDK에서 읽고, 이 시험에서만 제한 속도를 60으로 고정해요. 시험 기록은 따로 저장해요.", prefs.source == SignalSource.EMULATOR, editable) { scope.launch { app.settings.testRoad(if (it) 60 else 0) } }
         SettingRow("상황별 음성 안내", "등록된 녹음과 기존 임시 음성만 재생해요.", prefs.voice, true) { scope.launch { app.settings.voice(it) }; if (!it) app.voicePlayer.stop() }
         SettingRow("좋은 습관도 말해주기", "칭찬을 줄이고 싶을 때 끌 수 있어요.", prefs.praise, true) { scope.launch { app.settings.praise(it) } }

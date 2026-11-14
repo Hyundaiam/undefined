@@ -1,0 +1,8 @@
+{
+  "fingerprint": "261b6e04c00ee5ac88055b4582d461ed63de289e55767a5db9f26ad6f0bbb49f",
+  "text": "이놈아, 굽은 길이다. 속도부터 낮춰라.",
+  "seconds": 5.04,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "ca697000e0c6895fe0917f4b376c451ee3290b0d337ccebd640cadcd36ba8a8c"
+}

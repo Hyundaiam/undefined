@@ -1,0 +1,8 @@
+{
+  "fingerprint": "0238f2225ce85cf1f334568e4f4b8ddd60169b450fb6996abd1bae9c46301690",
+  "text": "깜빡이를 안 켰어! 먼저 켜 줘!",
+  "seconds": 3.2800416666666665,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "98ce5f0f092b1893e04b9c116c64e88844d3bcfde133d0418eff55e40db67f40"
+}

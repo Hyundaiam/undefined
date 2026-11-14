@@ -1,0 +1,8 @@
+{
+  "fingerprint": "5f0d8633a1ff31826555bd018d5259db10399f46def55c3f1b1eed1dfaa23da1",
+  "text": "이놈아, 앞에 사람이 있잖냐. 천천히 가라.",
+  "seconds": 5.12,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "077a2ff37c745800bc4e08fa243c6c6534fd6a125ec16a29fe221f4c894918ff"
+}

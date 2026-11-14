@@ -1,0 +1,8 @@
+{
+  "fingerprint": "645cebfb244dbed57196775106f66278ec10331299ed84b27e3d43eed0fb7941",
+  "text": "빨간불인데 선 넘었다. 차분하게 멈추자.",
+  "seconds": 2.96,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "ff835d14c277ca8bc0e797d949f981ceaf94ddd5acd4f032e4f7b2d9107cc473"
+}

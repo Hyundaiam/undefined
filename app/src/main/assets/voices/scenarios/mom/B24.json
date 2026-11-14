@@ -1,0 +1,8 @@
+{
+  "fingerprint": "464b3e37a9ee13d996075c7d9350097acf428b7d229b17768b3e482ca67b0569",
+  "text": "배터리가 부족할 수 있어. 가까운 충전소를 찾아보자.",
+  "seconds": 5.28,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "5a3e7bb97b7d1bfa3fb0bb9334af27f37ffe95714e44d11fa4318c0f01a8775a"
+}

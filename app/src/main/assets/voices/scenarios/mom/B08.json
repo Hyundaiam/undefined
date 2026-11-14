@@ -1,0 +1,8 @@
+{
+  "fingerprint": "f61fae49db3a676e07c037e35c9665094e522f95c62a3a915bc84b6a184cdf8c",
+  "text": "앞에 보행자가 있어. 감속하고 양보해줘.",
+  "seconds": 4.48,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "52d7cde4bf597166605257d2b38633f36aff7935c28be0ef22635cfe4b295842"
+}

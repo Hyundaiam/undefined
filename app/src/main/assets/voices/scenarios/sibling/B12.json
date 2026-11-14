@@ -1,0 +1,8 @@
+{
+  "fingerprint": "15a06c6b3fec85298d714aa399402a7a32fa0fb99e320a7e88d069c2f90e1c21",
+  "text": "두 발로 밟고 있대! 멈추고 확인해 줘!",
+  "seconds": 3.52,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "c42dad900ed5c436db1fe2d4bf60cb414d57b5453610459bb11af40e8c000841"
+}

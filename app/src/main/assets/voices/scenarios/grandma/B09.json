@@ -1,0 +1,8 @@
+{
+  "fingerprint": "9a9519bec30cb9092c1bdacb9b4c0ea3e9e14482bff4b7247c3b9a2b35ffe86b",
+  "text": "이놈아, 미끄러운 길이다. 천천히 가라.",
+  "seconds": 4.32,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "bd3fa8da268b5409c0eb8b100199753ed793ab1be2064393ae343713e394a6ee"
+}

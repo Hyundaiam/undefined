@@ -1,0 +1,8 @@
+{
+  "fingerprint": "f6f5e3e6c4b8125f34f1823fae063c7efdcf4bd82197f6e8255fe30de83b0899",
+  "text": "이놈아, 급한 차가 오잖냐. 길 좀 내줘라.",
+  "seconds": 4.72,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "e74ec6a4ad4add0ca28bd1a4f496466c1c9f21307ffc300e3b9a1c1a96eb7214"
+}

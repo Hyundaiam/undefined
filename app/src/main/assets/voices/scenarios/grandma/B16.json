@@ -1,0 +1,8 @@
+{
+  "fingerprint": "4c876113bd25f494d2fd9298f7b2badc5887147947bfa8852b024e64cb8bcb2d",
+  "text": "이놈아, 아이들 다니는 길이다. 속도 낮춰라.",
+  "seconds": 5.12,
+  "model": "Qwen3-TTS-12Hz-1.7B-Base",
+  "fictional": true,
+  "sha256": "681ccb1300735a10466f65c00526c848fdb28579cb2a9c9f935d5a4b8a5909a6"
+}

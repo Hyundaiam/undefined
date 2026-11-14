@@ -24,7 +24,8 @@ class DrivingService : Service() {
     private var driverId = 0L
     private var mode = SignalSource.DEMO
     private var starting = false
-    private var autoDemo = true
+    private var autoDemo = false
+    private var replayJob: Job? = null
     private var startedAt = 0L
     private var testLimit = 0
     private val pendingSpeech = linkedMapOf<String, Pair<Candidate, Long>>()
@@ -42,10 +43,14 @@ class DrivingService : Service() {
             STOP -> stopMonitoring()
             SCENARIO -> {
                 val id = intent.getStringExtra("scenario") ?: return START_NOT_STICKY
-                if (mode == SignalSource.DEMO && tripId != null) scope.launch { simulate(id) }
+                if (mode == SignalSource.DEMO && tripId != null && id in ScenarioFixtures.ids) {
+                    replayJob?.cancel()
+                    replayJob = scope.launch { simulate(id) }
+                }
             }
             START -> if (!starting && tripId == null) {
                 starting = true
+                autoDemo = intent.getBooleanExtra("autoDemo", false)
                 val prefsDemo = intent.getBooleanExtra("demo", true)
                 testLimit = intent.getIntExtra("testLimit", 0).takeIf { TestEnvironment.available && it in 10..130 } ?: 0
                 mode = when { prefsDemo -> SignalSource.DEMO; testLimit > 0 -> SignalSource.EMULATOR; else -> SignalSource.PLEOS }
@@ -84,7 +89,7 @@ class DrivingService : Service() {
             backend = PleosSignals(app, scope, driver, false).also { it.start() }
         }
         scope.launch {
-            if (app.settings.flow.first().voice) app.catalog.find("C01")?.let { app.voicePlayer.play(driver.persona, it) }
+            if (mode != SignalSource.DEMO && app.settings.flow.first().voice) app.catalog.find("C01")?.let { app.voicePlayer.play(driver.persona, it) }
         }
         scope.launch {
             var seconds = 0
@@ -93,7 +98,7 @@ class DrivingService : Service() {
                 val frame = if (mode != SignalSource.DEMO) backend?.frames?.value?.let { raw ->
                     if (mode == SignalSource.EMULATOR) raw.copy(timeMs = now, source = mode, speedLimitKph = testLimit.toDouble(), speedLimitTimeMs = now, speedLimitOrigin = "EMULATOR_TEST")
                     else raw.copy(timeMs = now)
-                } else (app.monitor.value.frame ?: SignalFrame(now, SignalSource.DEMO, speedKph = 58.0, speedLimitKph = 60.0, distanceM = 42.0, gear = "GEAR_DRIVE")).copy(timeMs = now)
+                } else (app.monitor.value.frame ?: SignalFrame(now, SignalSource.DEMO)).copy(timeMs = now)
                 if (frame != null) {
                     val hasSignal = frame.speedKph != null || frame.speedLimitKph != null || frame.beltBySeat.isNotEmpty() || frame.windowPositions.isNotEmpty() || frame.backrestPositions.isNotEmpty() || frame.gear != null
                     val assessment = SpeedAssessment.from(frame, now)
@@ -103,7 +108,7 @@ class DrivingService : Service() {
                         SpeedState.OVER_LIMIT -> "제한 속도 초과 · 속도를 낮춰주세요"
                         SpeedState.WITHIN_LIMIT -> "제한 속도 이내 · 주행을 확인하고 있어요"
                     }
-                    app.monitor.update { it.copy(frame = frame, status = status) }
+                    if (mode != SignalSource.DEMO) app.monitor.update { it.copy(frame = frame, status = status) }
                     withContext(Dispatchers.IO) {
                         val id = tripId ?: return@withContext
                         app.dao.heartbeat(id, now)
@@ -111,11 +116,11 @@ class DrivingService : Service() {
                         if (seconds % 60 == 0) app.dao.trimObservations()
                     }
                     if (mode != SignalSource.DEMO) engine.evaluate(frame, now).forEach { record(it) }
-                    flushSpeech(frame, now)
+                    if (mode != SignalSource.DEMO) flushSpeech(frame, now)
                 }
                 if (mode == SignalSource.DEMO && autoDemo && seconds > 0 && seconds % 15 == 0) {
                     val list = app.catalog.scenarios.filter { it.tone != Tone.COMMON }
-                    simulate(list[(seconds / 15 - 1) % list.size].id)
+                    if (replayJob?.isActive != true) replayJob = scope.launch { simulate(list[(seconds / 15 - 1) % list.size].id) }
                 }
                 seconds++; delay(1_000)
             }
@@ -124,15 +129,34 @@ class DrivingService : Service() {
     private suspend fun simulate(id: String) {
         val scenario = app.catalog.find(id) ?: return
         if (scenario.tone == Tone.COMMON) return
-        val frame = SignalFrame(System.currentTimeMillis(), SignalSource.DEMO,
-            speedKph = if (id == "B02") 74.0 else if (id.endsWith("15")) 0.0 else 55.0,
-            speedLimitKph = 60.0, distanceM = if (id == "B01") 12.0 else 42.0,
-            gear = if (id.endsWith("15")) "GEAR_PARK" else "GEAR_DRIVE", tunnel = id.endsWith("10"), windowOpen = id == "B10",
-            handsOnWheel = if (id == "B11") 1 else 2,
-            occupiedSeats = setOf("ROW_1_LEFT"), beltBySeat = mapOf("ROW_1_LEFT" to (id != "B14")))
-        app.monitor.update { it.copy(frame = frame) }
-        record(Candidate(id, "시연 입력 · ${scenario.trigger}", 1.0, SignalSource.DEMO))
-        flushSpeech(frame, System.currentTimeMillis())
+        engine.reset(); speechGate.reset(); pendingSpeech.clear(); app.voicePlayer.stop()
+        app.monitor.update { it.copy(replayId = id, replayStage = "센서 입력 재현 중", replayProgress = 0f, lastScenarioId = null, feedback = "", status = "시험 입력 · ${scenario.title}") }
+        val samples = ScenarioFixtures.frames(id)
+        var detected = false
+        for ((index, sample) in samples.withIndex()) {
+            currentCoroutineContext().ensureActive()
+            val now = System.currentTimeMillis()
+            val display = sample.copy(timeMs = now, speedTimeMs = now.takeIf { sample.speedKph != null }, speedLimitTimeMs = now.takeIf { sample.speedLimitKph != null }, speedLimitOrigin = "SCENARIO_FIXTURE")
+            app.monitor.update { it.copy(frame = display, replayProgress = (index + 1f) / samples.size, replayStage = "센서 재현 · 가상 ${sample.timeMs / 1_000}초") }
+            withContext(Dispatchers.IO) {
+                tripId?.let { app.dao.addObservation(ObservationEntity(driverId = driverId, tripId = it, source = "DEMO", observedAt = now, payload = gson.toJson(display))) }
+            }
+            // The selected ID never becomes a verdict. The same rules as live driving
+            // evaluate the synthetic sensor sequence on an explicitly accelerated clock.
+            val results = engine.evaluate(sample, sample.timeMs)
+            for (result in results) {
+                record(result.copy(reason = "시험 센서 · 가상 ${sample.timeMs / 1_000}초 · ${result.reason}"))
+                if (result.scenarioId == id) detected = true
+            }
+            flushSpeech(display, now)
+            if (detected) break
+            delay(150)
+        }
+        app.monitor.update { it.copy(replayProgress = 1f, replayStage = if (detected) "조건 판정 완료 · ${it.lastScenarioId}" else "조건 미충족 · 입력을 확인해 주세요") }
+        while (pendingSpeech.isNotEmpty()) {
+            delay(1_000)
+            app.monitor.value.frame?.let { flushSpeech(it, System.currentTimeMillis()) }
+        }
     }
     private suspend fun record(candidate: Candidate) {
         val id = tripId ?: return
@@ -141,7 +165,8 @@ class DrivingService : Service() {
         withContext(Dispatchers.IO) {
             app.dao.record(EventEntity(driverId = driverId, tripId = id, source = candidate.source.name, scenarioId = scenario.id, category = scenario.category, tone = scenario.tone.name, reason = candidate.reason, confidence = candidate.confidence, observedAt = now))
         }
-        app.monitor.update { it.copy(lastScenarioId = scenario.id, feedback = scenario.recordingText, feedbackAt = now) }
+        val persona = withContext(Dispatchers.IO) { app.dao.driver(driverId)?.persona } ?: "friend"
+        app.monitor.update { it.copy(lastScenarioId = scenario.id, feedback = app.voicePlayer.feedbackText(persona, scenario), feedbackAt = now) }
         pendingSpeech[scenario.id] = candidate to now
     }
     private suspend fun flushSpeech(frame: SignalFrame, now: Long) {
@@ -157,13 +182,14 @@ class DrivingService : Service() {
         val ordered = pendingSpeech.keys.sortedBy { when { it == "B02" -> 0; it.startsWith("B") -> 1; it == "C06" -> 2; else -> 3 } }
         for (id in ordered) {
             val scenario = app.catalog.find(id) ?: continue
-            if (app.voicePlayer.playing.value != null && id != "B02") continue
-            if (!speechGate.canSpeak(scenario.tone, now)) continue
+            val urgent = id == "B02" || id == "B16"
+            if (app.voicePlayer.playing.value != null && !urgent) continue
+            if (!speechGate.canSpeak(scenario.tone, now, urgent = urgent)) continue
             // Some old clips mention a fixed 60 km/h limit or an unverified improvement.
             val legacyAllowed = mode == SignalSource.DEMO ||
                 (id == "B02" && frame.speedLimitKph == 60.0) || id in setOf("B01", "B05", "B10", "B11", "C06")
             when (app.voicePlayer.play(driver.persona, scenario, allowLegacy = legacyAllowed)) {
-                PlaybackResult.STARTED -> { speechGate.markPlayed(scenario.tone, now); pendingSpeech.remove(id); return }
+                PlaybackResult.STARTED -> { speechGate.markPlayed(scenario.tone, now, urgent = urgent); pendingSpeech.remove(id); return }
                 PlaybackResult.MISSING -> pendingSpeech.remove(id)
                 PlaybackResult.FOCUS_DENIED -> return // Retry while the observation is still relevant.
             }

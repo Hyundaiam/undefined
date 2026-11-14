@@ -9,7 +9,7 @@ import io.hyundaiam.gyeot.core.SignalSource
 private val Context.store by preferencesDataStore("gyeot_settings")
 data class Preferences(val driverId: Long = 1, val demo: Boolean = false, val voice: Boolean = true, val praise: Boolean = true, val gleoEnabled: Boolean = false, val gleoPackage: String = "", val testRoadLimit: Int = 0) {
     val source get() = when { demo -> SignalSource.DEMO; testRoadLimit > 0 && TestEnvironment.available -> SignalSource.EMULATOR; else -> SignalSource.PLEOS }
-    val modeLabel get() = when(source) { SignalSource.DEMO -> "상황 시연"; SignalSource.EMULATOR -> "시험도로 ${testRoadLimit} · 에뮬레이터"; SignalSource.PLEOS -> "차량 · 내비게이션" }
+    val modeLabel get() = when(source) { SignalSource.DEMO -> "50상황 센서 재현"; SignalSource.EMULATOR -> "시험도로 ${testRoadLimit} · 에뮬레이터"; SignalSource.PLEOS -> "차량 · 내비게이션" }
 }
 class AppSettings(private val context: Context) {
     private val driver = longPreferencesKey("driver")

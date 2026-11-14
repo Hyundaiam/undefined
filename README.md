@@ -6,11 +6,13 @@
 
 - [최신 APK](https://github.com/Hyundaiam/Hyundai/releases/latest) · 에뮬레이터 설치용 debug 서명 빌드
 - [녹음 상황 15 + 15, 공통 멘트 8개](docs/RECORDING_GUIDE.md)
-- [센서 지원 범위](docs/SENSOR_MATRIX.md) · [Gleo 연결](docs/GLEO_INTEGRATION.md) · [검증 범위](docs/TESTING.md)
+- [Pleos 에뮬레이터 실행](docs/PLEOS_EMULATOR.md) · [센서 지원 범위](docs/SENSOR_MATRIX.md) · [Gleo 연결](docs/GLEO_INTEGRATION.md) · [검증 범위](docs/TESTING.md)
 
 처음에는 **시연 모드**입니다. `함께 출발`을 누른 뒤 좋은 순간/주의 순간을 선택하면 기록과 음성 흐름을 확인할 수 있습니다. 자동 시연은 15초마다 상황을 바꿉니다. `나의 운전`에서 이번·직전 주행의 좋은 이벤트 비율과 습관별 누적 기록을 비교합니다.
 
 실차·Pleos 에뮬레이터에서는 `연결 · 설정`에서 시연 모드를 끄고 시작합니다. 차량에서 실제 제공되는 값만 읽으며, 미지원 항목은 미수신으로 표시합니다. 시작 후 `내비게이션으로 돌아가기`를 누르면 앱 화면을 내려도 foreground service가 계속 기록합니다. 알림의 `주행 종료`로 멈출 수 있습니다. 자동 부팅 실행이나 종료된 서비스의 무조건 재시작은 하지 않습니다.
+
+2026-11-14 기준 공식 **Pleos Connect 2.1.0 / API 34** 에뮬레이터에서 속도·기어·좌석·벨트·창문·조향각·브레이크·방향지시등 신호 수신을 확인했습니다. Virtual Console의 창문 변경 콜백과 실제 SDK 입력의 백그라운드 수집·저장도 검증했습니다. JVM 15개와 Pleos 기기 테스트 7개가 통과했습니다. Gleo 최종 음성 답변·실제 도로/차량에서의 검증은 별도입니다.
 
 ## 구현한 기능
 

@@ -9,16 +9,20 @@ class CoachEngine {
     private var episodeLimit: Double? = null
     private var indicatorSince: Long? = null
     private var gentleBrakingSince: Long? = null
+    private val active = mutableSetOf<String>()
+    fun isActive(id: String) = id in active
 
-    fun reset() { since.clear(); emitted.clear(); previous = null; speedEpisode = false; episodeLimit = null; indicatorSince = null; gentleBrakingSince = null }
+    fun reset() { since.clear(); emitted.clear(); active.clear(); previous = null; speedEpisode = false; episodeLimit = null; indicatorSince = null; gentleBrakingSince = null }
 
     fun evaluate(frame: SignalFrame, nowMs: Long = frame.timeMs): List<Candidate> {
         if (nowMs - frame.timeMs !in 0..5_000) return emptyList()
         if (previous?.source != frame.source) reset()
+        active.clear()
         val candidates = mutableListOf<Candidate>()
         fun condition(id: String, active: Boolean?, holdMs: Long, reason: String) {
             val key = "${frame.source}:$id"
             if (active != true) { since.remove(key); return }
+            this@CoachEngine.active.add(id)
             val started = since.getOrPut(key) { frame.timeMs }
             val last = emitted[key]
             val cooldown = when { id == "B02" -> 30_000L; id == "C06" -> 0L; id.startsWith("G") -> 300_000L; else -> 120_000L }

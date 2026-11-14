@@ -14,7 +14,7 @@
 | GET_DRIVING_PROGRESS | 해당 운전자·입력 출처의 좋은/주의 이벤트 수와 습관별 집계 |
 | GET_RECORDING_STATUS | 캐릭터당 기본 50/공통 8슬롯, 개인 파일/포함된 사람 녹음 수, 포함된 상황 음성 200개 |
 
-이름·좌표·녹음 파일은 보내지 않습니다. 응답에는 DEMO/EMULATOR/PLEOS 출처를 포함합니다. 코칭 후보는 `LOCAL_RULES_NOT_GLEO`로 명시합니다. 임의의 AI 확정 판정으로 포장하지 않습니다.
+이름·좌표·녹음 파일은 보내지 않습니다. 응답에는 DEMO/EMULATOR/WEB_SIM/PLEOS 출처를 포함합니다. 코칭 후보는 `LOCAL_RULES_NOT_GLEO`로 명시합니다. 임의의 AI 확정 판정으로 포장하지 않습니다.
 
 ## 연결 순서
 

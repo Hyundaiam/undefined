@@ -41,6 +41,10 @@ class DrivingService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             STOP -> stopMonitoring()
+            RESET_WEB -> if(mode == SignalSource.WEB_SIM && TestEnvironment.available) {
+                engine.reset(); speechGate.reset(); pendingSpeech.clear(); app.voicePlayer.resetSession()
+                app.monitor.update { it.copy(frame = null, feedback = "", feedbackAt = null, lastScenarioId = null, status = "웹에서 출발해 주세요") }
+            }
             SCENARIO -> {
                 val id = intent.getStringExtra("scenario") ?: return START_NOT_STICKY
                 if (mode == SignalSource.DEMO && tripId != null && id in ScenarioFixtures.ids) {
@@ -53,7 +57,7 @@ class DrivingService : Service() {
                 autoDemo = intent.getBooleanExtra("autoDemo", false)
                 val prefsDemo = intent.getBooleanExtra("demo", true)
                 testLimit = intent.getIntExtra("testLimit", 0).takeIf { TestEnvironment.available && it in 10..130 } ?: 0
-                mode = when { prefsDemo -> SignalSource.DEMO; testLimit > 0 -> SignalSource.EMULATOR; else -> SignalSource.PLEOS }
+                mode = when { intent.getBooleanExtra("webSimulator", false) && TestEnvironment.available -> SignalSource.WEB_SIM; prefsDemo -> SignalSource.DEMO; testLimit > 0 -> SignalSource.EMULATOR; else -> SignalSource.PLEOS }
                 driverId = intent.getLongExtra("driver", 1)
                 promote()
                 scope.launch {
@@ -79,26 +83,33 @@ class DrivingService : Service() {
     }
     private suspend fun startMonitoring() {
         app.ready.await()
+        if(mode == SignalSource.WEB_SIM) app.voicePlayer.resetSession()
         val driver = requireNotNull(withContext(Dispatchers.IO) { app.dao.driver(driverId) })
         startedAt = System.currentTimeMillis()
         tripId = withContext(Dispatchers.IO) { app.dao.addTrip(TripEntity(driverId = driverId, source = mode.name, startedAt = startedAt, lastSeenAt = startedAt)) }
         app.monitor.value = MonitorUi(true, driverId, mode == SignalSource.DEMO, tripId, startedAt, status = "차량 신호 연결 중", source = mode)
-        if (mode != SignalSource.DEMO) {
+        if (mode in setOf(SignalSource.PLEOS, SignalSource.EMULATOR)) {
             // FusedLocation's platform permission behavior must be validated in Pleos.
             // The service reads no location in this first release; it probes support only.
             backend = PleosSignals(app, scope, driver, false).also { it.start() }
         }
         scope.launch {
-            if (mode != SignalSource.DEMO && app.settings.flow.first().voice) app.catalog.find("C01")?.let { app.voicePlayer.play(driver.persona, it) }
+            if (mode in setOf(SignalSource.PLEOS, SignalSource.EMULATOR) && app.settings.flow.first().voice) app.catalog.find("C01")?.let { app.voicePlayer.play(driver.persona, it) }
         }
         scope.launch {
             var seconds = 0
             while (isActive) {
                 val now = System.currentTimeMillis()
-                val frame = if (mode != SignalSource.DEMO) backend?.frames?.value?.let { raw ->
+                val frame = if(mode == SignalSource.WEB_SIM) app.webSimulator.frame.value?.takeIf { now - it.timeMs in 0..1600 }
+                else if (mode != SignalSource.DEMO) backend?.frames?.value?.let { raw ->
                     if (mode == SignalSource.EMULATOR) raw.copy(timeMs = now, source = mode, speedLimitKph = testLimit.toDouble(), speedLimitTimeMs = now, speedLimitOrigin = "EMULATOR_TEST")
                     else raw.copy(timeMs = now)
                 } else (app.monitor.value.frame ?: SignalFrame(now, SignalSource.DEMO)).copy(timeMs = now)
+                if(mode == SignalSource.WEB_SIM && frame == null) {
+                    if(app.monitor.value.frame != null) { app.voicePlayer.stop(); pendingSpeech.clear(); engine.reset() }
+                    app.monitor.update { it.copy(frame = null, status = "웹 가상주행 연결 대기 · 브라우저에서 출발해 주세요") }
+                    tripId?.let { withContext(Dispatchers.IO) { app.dao.heartbeat(it,now) } }
+                }
                 if (frame != null) {
                     val hasSignal = frame.speedKph != null || frame.speedLimitKph != null || frame.beltBySeat.isNotEmpty() || frame.windowPositions.isNotEmpty() || frame.backrestPositions.isNotEmpty() || frame.gear != null
                     val assessment = SpeedAssessment.from(frame, now)
@@ -122,7 +133,7 @@ class DrivingService : Service() {
                     val list = app.catalog.scenarios.filter { it.tone != Tone.COMMON }
                     if (replayJob?.isActive != true) replayJob = scope.launch { simulate(list[(seconds / 15 - 1) % list.size].id) }
                 }
-                seconds++; delay(1_000)
+                seconds++; delay(if(mode == SignalSource.WEB_SIM) 250 else 1_000)
             }
         }
     }
@@ -175,6 +186,7 @@ class DrivingService : Service() {
         pendingSpeech.entries.removeAll { (id, value) ->
             now - value.second > 20_000 || (id == "B02" && assessment.state != SpeedState.OVER_LIMIT) ||
                 (id == "C06" && assessment.state != SpeedState.WITHIN_LIMIT) ||
+                (mode != SignalSource.DEMO && id != "C06" && !engine.isActive(id)) ||
                 (!prefs.praise && app.catalog.find(id)?.tone == Tone.GOOD)
         }
         if (!prefs.voice) { app.voicePlayer.report("음성 안내가 꺼져 있어요.", VoicePhase.MUTED); return }
@@ -214,5 +226,6 @@ class DrivingService : Service() {
         const val START = "io.hyundaiam.gyeot.START"
         const val STOP = "io.hyundaiam.gyeot.STOP"
         const val SCENARIO = "io.hyundaiam.gyeot.SCENARIO"
+        const val RESET_WEB = "io.hyundaiam.gyeot.RESET_WEB"
     }
 }

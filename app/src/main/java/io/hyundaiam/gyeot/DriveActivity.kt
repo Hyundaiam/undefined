@@ -38,11 +38,13 @@ class DriveActivity : ComponentActivity() {
     }
     override fun onNewIntent(intent: Intent) { super.onNewIntent(intent); setIntent(intent); handleTestIntent(intent) }
     private fun handleTestIntent(intent: Intent) {
-        if (!intent.getBooleanExtra("speedTest", false) || !TestEnvironment.available) return
+        val web = intent.getBooleanExtra("webSimulator", false)
+        if ((!intent.getBooleanExtra("speedTest", false) && !web) || !TestEnvironment.available) return
         lifecycleScope.launch {
             app.ready.await()
             if (app.monitor.value.running) return@launch
-            app.settings.testRoad(60); app.settings.voice(true)
+            if(web) { app.settings.web(true); app.settings.praise(true) } else app.settings.testRoad(60)
+            app.settings.voice(true)
             startCurrentTrip()
         }
     }
@@ -50,11 +52,11 @@ class DriveActivity : ComponentActivity() {
         lifecycleScope.launch {
             app.ready.await()
             val prefs = app.settings.flow.first()
-            if (prefs.source != SignalSource.DEMO && ContextCompat.checkSelfPermission(this@DriveActivity, "android.car.permission.CAR_SPEED") != PackageManager.PERMISSION_GRANTED) {
+            if (prefs.source in setOf(SignalSource.PLEOS, SignalSource.EMULATOR) && ContextCompat.checkSelfPermission(this@DriveActivity, "android.car.permission.CAR_SPEED") != PackageManager.PERMISSION_GRANTED) {
                 app.monitor.value = MonitorUi(status = "정차 후 설정에서 속도 권한을 허용해 주세요")
                 return@launch
             }
-            ContextCompat.startForegroundService(this@DriveActivity, Intent(this@DriveActivity, DrivingService::class.java).setAction(DrivingService.START).putExtra("driver", prefs.driverId).putExtra("demo", prefs.demo).putExtra("testLimit", prefs.testRoadLimit))
+            ContextCompat.startForegroundService(this@DriveActivity, Intent(this@DriveActivity, DrivingService::class.java).setAction(DrivingService.START).putExtra("driver", prefs.driverId).putExtra("demo", prefs.demo).putExtra("testLimit", prefs.testRoadLimit).putExtra("webSimulator", prefs.web))
         }
     }
 }
@@ -78,7 +80,7 @@ private fun DrivingView(activity: DriveActivity, app: GyeotApplication) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Text("곁:", fontSize = 40.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.width(24.dp))
-                    Text(concise(if (monitor.source == SignalSource.EMULATOR || prefs.source == SignalSource.EMULATOR) "에뮬레이터 시험도로 · 제한 ${prefs.testRoadLimit}" else if (prefs.demo) "상황 시연" else "내비게이션 도로 정보"), fontSize = 20.sp)
+                    Text(concise(if(monitor.source == SignalSource.WEB_SIM || prefs.source == SignalSource.WEB_SIM) "웹 가상주행 · 차량 조건을 확인하고 있어요" else if (monitor.source == SignalSource.EMULATOR || prefs.source == SignalSource.EMULATOR) "에뮬레이터 시험도로 · 제한 ${prefs.testRoadLimit}" else if (prefs.demo) "상황 시연" else "내비게이션 도로 정보"), fontSize = 20.sp)
                     Spacer(Modifier.weight(1f))
                     Text(if (monitor.running) "● 코칭 중" else "○ 주행 대기", fontSize = 20.sp)
                 }

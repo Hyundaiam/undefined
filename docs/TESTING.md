@@ -1,5 +1,23 @@
 # 검증 기록
 
+## v0.4.0 웹 가상주행
+
+2026-11-14, 같은 Pleos QA AVD에서 검증했습니다. JVM 76개(기존 72개 + 웹 센서 계약 4개), 기기 8개(기존 기본/SDK 7개 + 웹 브리지 1개), Lint·APK·기기 테스트 APK 빌드와 200개 음성 계약 검사가 통과했습니다. 아래 v0.3.0의 134개 결과는 해당 버전의 별도 기록입니다.
+
+- 웹 요청의 시각/출처/판정 ID 위조 거부, 수치·타입 검증, 서버 시각과 실제 조건 유지 시간 사용
+- HTTP 원시 센서 입력 → 네이티브 B02 과속 음성 → C06 감속 격려의 실제 음성 트랙 진행
+- 입력 중단 1.6초 후 프레임 해제·음성 중지·대기 복귀, 초기화, 다른 Origin 요청 거부
+- 브라우저에서 실제 페달을 눌러 89 km/h로 가속 → 과속 안내, 같은 60 도로에서 감속 → 격려
+- 도로가 이어지며 보호구역·차간거리 등 조건 자동 변경, 웹에서 할머니 선택·벨트 해제 → 해당 캐릭터의 벨트 음성
+
+```sh
+adb -s emulator-5556 shell am instrument -w -r -e class io.hyundaiam.gyeot.WebSimulatorTest -e webSimulator true io.hyundaiam.gyeot.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+웹 전송은 센서 값만 받습니다. 웹에서 지정한 상황 ID를 바로 재생하는 endpoint는 없습니다. [웹 가상주행 안내](WEB_SIMULATOR.md)를 참고하세요.
+
+## v0.3.0 상황 재현
+
 검증 환경: macOS Apple Silicon, Java 17, Gradle 8.9, Android SDK 35. 2026-11-14 KST에 공식 Pleos Connect 2.1.0 / Android API 34 ARM64에서 v0.3.0을 검증했습니다.
 
 ## 자동 검증

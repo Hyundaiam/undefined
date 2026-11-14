@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>곁 · 가상 주행</title><link rel="stylesheet" href="/styles.css"></head>
+<body>
+<header class="mast"><a class="brand" href="/">곁<span>DRIVE COMPANION</span></a><div class="mode">가상 주행</div><div class="connection" id="connection" role="status"><i></i><span>곁에 연결하는 중</span></div><button class="quiet" id="reset">처음부터</button></header>
+<main>
+<div class="intro"><div><p class="eyebrow">오늘도, 함께 달려요.</p><h1>운전하면, 곁이 알아차려요.</h1></div><p>가속하고, 주변을 살피고, 안전하게 멈춰보세요.<br>차량 조건이 달라지면 곁이 목소리로 이야기합니다.</p></div>
+<div class="main-grid">
+<section class="drive" aria-label="가상 차량 주행">
+  <div class="scene"><canvas id="road" aria-label="앞차와 차선, 도로 환경이 보이는 가상 차량 화면"></canvas>
+    <div class="scene-top"><span class="road-name" id="roadName">도심로</span><span id="environment">맑음 · 낮</span><span class="scene-state" id="sceneState">출발 전</span></div>
+    <div class="start-cover" id="startCover"><span class="start-mark">곁:</span><h2>어디든, 안전하게.</h2><p>방향키로 운전하거나 아래 페달을 눌러보세요.</p><button class="primary" id="start">시동 걸고 출발</button><span>음성은 연결된 곁 앱에서 나옵니다.</span></div>
+    <div class="instruments"><div class="speed"><strong id="speed">0</strong><span>km/h</span></div><div class="limit"><span>제한</span><b id="limit">60</b></div><div class="distance"><span>앞차와 거리</span><strong id="gap">55 <small>m</small></strong><div class="gap-track"><i id="gapFill"></i></div></div><div class="route-info"><span id="routeDistance">0.00 km</span><span id="roadHint">도심로 · 제한 60</span></div></div>
+  </div>
+  <div class="controls">
+    <div class="gears" aria-label="기어"><button data-gear="P" class="selected">P</button><button data-gear="D">D</button></div>
+    <div class="indicators"><button id="leftSignal" aria-label="왼쪽 방향지시등">←</button><button id="rightSignal" aria-label="오른쪽 방향지시등">→</button></div>
+    <label class="steering"><span>조향 <b id="steerLabel">중앙</b></span><input id="steer" type="range" min="-1" max="1" step="0.05" value="0" aria-label="핸들 조향"><button class="center-steer" id="centerSteer">중앙으로</button></label>
+    <button class="pedal brake" id="brake">BRAKE<span>길게 눌러 감속</span></button><button class="pedal accel" id="accel">ACCEL<span>길게 눌러 가속</span></button>
+  </div><div class="shortcuts"><span>↑ 가속 &nbsp; ↓ 제동 &nbsp; ← → 조향 &nbsp; Q / E 방향지시등</span><span id="driveStatus">웹에서 출발하면 곁이 주행을 살펴봐요.</span></div>
+</section>
+<aside class="companion" aria-label="곁의 실시간 음성 피드백">
+  <div class="aside-heading"><span class="eyebrow">옆에서 듣고 있어요</span><span class="native-badge" id="nativeStatus">앱 연결 대기</span></div>
+  <h2>오늘의 드라이빙 메이트</h2>
+  <div class="personas" aria-label="목소리 선택"><button data-persona="friend" class="selected">경상도 친구</button><button data-persona="grandma">욕쟁이 할머니</button><button data-persona="mom">걱정 많은 엄마</button><button data-persona="sibling">5살 동생</button></div>
+  <div class="voice-card" id="voiceCard" aria-live="polite"><div class="voice-head"><span id="feedbackTitle">곁이 함께할 준비를 했어요.</span><div class="wave" id="wave"><i></i><i></i><i></i><i></i><i></i></div></div><p id="feedbackText">출발해보세요. 속도와 주변 상황을 살피며 필요한 순간에 말을 걸게요.</p><div class="voice-foot"><span id="audioState">음성 안내 대기</span><button id="mute" aria-label="음성 끄기">음성 켜짐</button></div></div>
+  <div class="sensing"><span><i id="sensorDot"></i><b id="sensorState">차량 신호 대기</b></span><span id="currentJudgment">출발하면 조건을 확인해요.</span></div>
+  <div class="history"><div class="history-head"><h3>함께 달린 순간</h3><span>이번 주행</span></div><div id="history"><p class="empty">아직 기록된 순간이 없어요.</p></div></div>
+</aside>
+</div>
+<section class="world-settings"><div class="settings-heading"><div><p class="eyebrow">상황은, 운전하면서 달라져요.</p><h2>도로와 차량 조건</h2></div><p>조건을 바꿔도 음성이 바로 선택되지는 않아요.<br>곁이 실제 주행 값과 지속 시간을 보고 판단합니다.</p></div>
+<div class="settings-grid">
+ <div class="setting-group"><h3>도로와 주변</h3>
+  <label class="field"><span>달릴 도로</span><select id="route" aria-label="달릴 도로"><option value="tour">이어지는 도심 주행</option><option value="city">도심로 · 60</option><option value="school">어린이보호구역 · 30</option><option value="tunnel">터널</option><option value="curve">굽은 길 · 권장 30</option><option value="crosswalk">횡단보도와 신호</option><option value="merge">합류 구간</option><option value="rest">휴게 공간</option></select></label>
+  <div class="field-pair"><label class="field"><span>날씨</span><select id="weather" aria-label="날씨"><option value="clear">맑음</option><option value="rain">비 · 젖은 노면</option></select></label><label class="field"><span>시간대</span><select id="timeOfDay" aria-label="시간대"><option value="day">낮</option><option value="night">밤</option></select></label></div>
+  <label class="field range-field"><span>앞차 속도 <b id="leadSpeedValue">50 km/h</b></span><input id="leadSpeed" type="range" min="0" max="100" step="1" value="50"></label>
+  <label class="field range-field"><span>앞차 간격 조정 <b id="gapValue">55 m</b></span><input id="leadGap" type="range" min="5" max="120" value="55"></label>
+  <label class="field"><span>옆 차</span><select id="sideCar" aria-label="옆 차"><option value="none">없음</option><option value="right">오른쪽 사각지대</option><option value="left">왼쪽 사각지대</option></select></label>
+  <div class="field-pair"><label class="field"><span>신호등</span><select id="traffic" aria-label="신호등"><option value="auto">자동 변경</option><option value="red">적색</option><option value="green">녹색</option></select></label><label class="toggle"><input id="pedestrian" type="checkbox"><span>횡단보도 보행자</span></label></div>
+  <label class="toggle"><input id="emergency" type="checkbox"><span>긴급차량 접근</span></label>
+ </div>
+ <div class="setting-group"><h3>차 안의 상태</h3>
+  <label class="toggle"><input id="driverBelt" type="checkbox" checked><span>운전자 안전벨트</span></label>
+  <label class="toggle"><input id="passenger" type="checkbox"><span>동승자 탑승</span></label>
+  <label class="toggle"><input id="passengerBelt" type="checkbox" checked><span>동승자 안전벨트</span></label>
+  <label class="toggle"><input id="windowOpen" type="checkbox"><span>창문 열림</span></label>
+  <label class="field"><span>핸들을 잡은 손</span><select id="hands" aria-label="핸들을 잡은 손"><option value="2">양손</option><option value="1">한 손</option><option value="0">손을 놓음</option></select></label>
+  <label class="toggle"><input id="bothFeet" type="checkbox"><span>자동변속 차량 양발 조작</span></label>
+  <label class="field range-field"><span>좌석 기준에서 벗어남 <b id="seatValue">5%</b></span><input id="seat" type="range" min="0" max="60" value="5"></label>
+  <label class="toggle"><input id="drowsy" type="checkbox"><span>졸음이 감지된 상태</span></label>
+ </div>
+ <div class="setting-group"><h3>차량과 도착 준비</h3>
+  <label class="toggle"><input id="ignition" type="checkbox" checked><span>시동 켜짐</span></label>
+  <label class="toggle"><input id="parkingBrake" type="checkbox"><span>주차 브레이크</span></label>
+  <label class="toggle"><input id="doorsOpen" type="checkbox"><span>도어 열림</span></label>
+  <label class="toggle"><input id="driverLeaving" type="checkbox"><span>운전자 하차 준비</span></label>
+  <label class="field range-field"><span>페달을 밟는 힘 <b id="pressureValue">60%</b></span><input id="pressure" type="range" min="10" max="100" value="60"></label>
+  <label class="field"><span>타이어 공기압</span><select id="tires" aria-label="타이어 공기압"><option value="normal">정상</option><option value="low">낮음</option></select></label>
+  <label class="field range-field"><span>잔여 주행 가능 거리 <b id="batteryValue">150 km</b></span><input id="battery" type="range" min="5" max="250" value="150"></label>
+  <label class="field range-field"><span>목적지까지 <b id="remainingValue">70 km</b></span><input id="remaining" type="range" min="10" max="200" value="70"></label>
+  <p class="setting-note">가상 센서로 만드는 주행 환경입니다.<br>실제 차량의 제어나 기록에 합쳐지지 않아요.</p>
+ </div>
+</div></section>
+<footer><span>곁: &nbsp; DRIVE COMPANION</span><span>가상 주행의 음성은 연결된 차량 앱에서 재생됩니다.</span></footer>
+</main><script src="/simulator.js"></script></body></html>

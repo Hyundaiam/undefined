@@ -29,6 +29,7 @@ class GyeotApplication : Application() {
     val monitor = MutableStateFlow(MonitorUi())
     val voicePlayer by lazy { ClipPlayer(this) }
     val ux by lazy { CarUxMonitor(this) }
+    val webSimulator by lazy { WebSimulatorBridge(this) }
     lateinit var ready: Deferred<Unit>
     override fun onCreate() {
         super.onCreate()
@@ -37,6 +38,7 @@ class GyeotApplication : Application() {
             if (dao.allDrivers().isEmpty()) dao.addDriver(DriverEntity(name = "운전자 1"))
             dao.recoverTrips()
         }
+        webSimulator.start()
     }
     fun capability(key: String, status: String) { monitor.update { it.copy(capabilities = it.capabilities + (key to status)) } }
 }

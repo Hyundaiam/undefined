@@ -23,7 +23,7 @@ import java.util.UUID
 
 enum class PlaybackResult { STARTED, MISSING, FOCUS_DENIED }
 enum class VoicePhase { IDLE, PREPARING, PLAYING, COMPLETED, WAITING_FOCUS, MISSING, ERROR, MUTED }
-data class VoicePlayback(val scenarioId: String? = null, val phase: VoicePhase = VoicePhase.IDLE, val renderedCount: Int = 0, val lastRenderedScenario: String? = null)
+data class VoicePlayback(val scenarioId: String? = null, val phase: VoicePhase = VoicePhase.IDLE, val renderedCount: Int = 0, val lastRenderedScenario: String? = null, val persona: String? = null)
 
 class ClipPlayer(private val app: GyeotApplication) {
     val message = MutableStateFlow("")
@@ -69,7 +69,7 @@ class ClipPlayer(private val app: GyeotApplication) {
                 .setOnAudioFocusChangeListener { if (it == AudioManager.AUDIOFOCUS_LOSS || it == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT || it == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) { stop(); report("다른 음성 안내로 재생을 중지했어요.", VoicePhase.WAITING_FOCUS) } }.build()
             focus = request
             if (audioManager.requestAudioFocus(request) != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) { report("다른 음성 안내가 끝나기를 기다리고 있어요.", VoicePhase.WAITING_FOCUS); releaseFocus(); return@withContext PlaybackResult.FOCUS_DENIED }
-            state.update { it.copy(scenarioId = scenario.id, phase = VoicePhase.PREPARING) }
+            state.update { it.copy(scenarioId = scenario.id, phase = VoicePhase.PREPARING, persona = persona) }
             // Pleos recommends 150–200 ms PCM pre-roll before recorded guidance.
             player.setMediaItems(listOf(MediaItem.fromUri("asset:///voices/preroll.wav"), MediaItem.fromUri(uri))); player.prepare(); player.play()
             playing.value = "${persona}_${scenario.id}"
@@ -87,6 +87,7 @@ class ClipPlayer(private val app: GyeotApplication) {
         }
     }
     fun stop() { renderWatcher?.cancel(); player.stop(); playing.value = null; state.update { it.copy(phase = VoicePhase.IDLE) }; releaseFocus() }
+    fun resetSession() { stop(); state.value = VoicePlayback(); message.value = "" }
     private fun releaseFocus() { val request = focus; focus = null; request?.let { audioManager.abandonAudioFocusRequest(it) } }
 
     suspend fun importClip(uri: Uri, persona: String, scenarioId: String): String = withContext(Dispatchers.IO) {

@@ -46,7 +46,7 @@ private val Paper = Color(0xFFF6F6F3)
 private val Subtle = Color(0xFF858580)
 private val Line = Color(0xFFE0E0DB)
 private val Shape = RoundedCornerShape(16.dp)
-private data class StartRequest(val driver: Long, val demo: Boolean, val testLimit: Int)
+private data class StartRequest(val driver: Long, val demo: Boolean, val testLimit: Int, val web: Boolean = false)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,14 +91,14 @@ private fun App(activity: MainActivity, app: GyeotApplication) {
     }
     var pendingStart by remember { mutableStateOf<StartRequest?>(null) }
     fun start(request: StartRequest) {
-        ContextCompat.startForegroundService(activity, Intent(activity, DrivingService::class.java).setAction(DrivingService.START).putExtra("driver", request.driver).putExtra("demo", request.demo).putExtra("testLimit", request.testLimit))
+        ContextCompat.startForegroundService(activity, Intent(activity, DrivingService::class.java).setAction(DrivingService.START).putExtra("driver", request.driver).putExtra("demo", request.demo).putExtra("testLimit", request.testLimit).putExtra("webSimulator", request.web))
         if (!request.demo) activity.startActivity(Intent(activity, DriveActivity::class.java))
     }
     val permissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { pendingStart?.let(::start); pendingStart = null }
     fun requestStart(request: StartRequest) {
             val requested = buildList {
                 if (Build.VERSION.SDK_INT >= 33) add(Manifest.permission.POST_NOTIFICATIONS)
-                if (!request.demo) add("android.car.permission.CAR_SPEED")
+                if (!request.demo && !request.web) add("android.car.permission.CAR_SPEED")
             }.filter { permission ->
                 ContextCompat.checkSelfPermission(activity, permission) != android.content.pm.PackageManager.PERMISSION_GRANTED &&
                     runCatching { activity.packageManager.getPermissionInfo(permission, 0) }.isSuccess
@@ -107,7 +107,7 @@ private fun App(activity: MainActivity, app: GyeotApplication) {
     }
     fun toggle() {
         if (monitor.running) activity.startService(Intent(activity, DrivingService::class.java).setAction(DrivingService.STOP))
-        else driver?.let { requestStart(StartRequest(it.id, prefs.demo, prefs.testRoadLimit)) }
+        else driver?.let { requestStart(StartRequest(it.id, prefs.demo, prefs.testRoadLimit, prefs.web)) }
     }
     fun speedTest() {
         val id = driver?.id ?: return
@@ -288,6 +288,7 @@ private fun SettingsScreen(app: GyeotApplication, prefs: Preferences, state: Mon
         Heading("READY FOR PLEOS CONNECT", "연결하고, 나를 기억하기.", "주행 설정은 출발 전에 바꿔주세요. 데이터와 녹음은 이 기기에 저장됩니다.")
         SettingRow("50상황 센서 재현", "좋은 상황 25개·주의 상황 25개. 합성 센서 입력을 규칙으로 판정하고 음성으로 안내해요. 실제 기록과 분리해요.", prefs.demo, editable) { scope.launch { app.settings.demo(it) } }
         if (TestEnvironment.available) SettingRow("에뮬레이터 시험도로 60", "차량 속도는 SDK에서 읽고, 이 시험에서만 제한 속도를 60으로 고정해요. 시험 기록은 따로 저장해요.", prefs.source == SignalSource.EMULATOR, editable) { scope.launch { app.settings.testRoad(if (it) 60 else 0) } }
+        if (TestEnvironment.available) SettingRow("웹 가상주행", "웹에서 바뀐 차량 조건으로 곁이 실시간 판단해요. 브라우저 주소는 localhost:8090이에요.", prefs.source == SignalSource.WEB_SIM, editable) { scope.launch { app.settings.web(it) } }
         SettingRow("상황별 음성 안내", "등록된 녹음과 기존 임시 음성만 재생해요.", prefs.voice, true) { scope.launch { app.settings.voice(it) }; if (!it) app.voicePlayer.stop() }
         SettingRow("좋은 습관도 말해주기", "칭찬을 줄이고 싶을 때 끌 수 있어요.", prefs.praise, true) { scope.launch { app.settings.praise(it) } }
         Row(Modifier.fillMaxWidth().padding(vertical = 19.dp), verticalAlignment = Alignment.CenterVertically) {

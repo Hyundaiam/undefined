@@ -2,7 +2,7 @@ package io.hyundaiam.gyeot.core
 
 import com.google.gson.Gson
 
-enum class SignalSource { PLEOS, DEMO, EMULATOR }
+enum class SignalSource { PLEOS, DEMO, EMULATOR, WEB_SIM }
 enum class Tone { GOOD, CAUTION, COMMON }
 data class Scenario(
     val id: String, val title: String, val category: String, val tone: Tone,

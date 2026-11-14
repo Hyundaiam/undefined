@@ -74,7 +74,7 @@ def main():
     else:
         raise SystemExit("차량 콘솔 준비가 지연되고 있어요. 잠시 후 실행 파일을 다시 열어 주세요.")
     if args.speed_test or args.scenario_test:
-        for permission in (["android.car.permission.POST_NOTIFICATIONS"] + (["android.car.permission.CAR_SPEED"] if args.speed_test else [])):
+        for permission in (["android.permission.POST_NOTIFICATIONS"] + (["android.car.permission.CAR_SPEED"] if args.speed_test else [])):
             adb("-s", serial, "shell", "pm", "grant", "--user", "current", "io.hyundaiam.gyeot", permission)
     launch = ["-s", serial, "shell", "am", "start", "--user", "current", "-n", "io.hyundaiam.gyeot/" + (".MainActivity" if args.scenario_test else ".DriveActivity")]
     if args.speed_test: launch += ["--ez", "speedTest", "true"]

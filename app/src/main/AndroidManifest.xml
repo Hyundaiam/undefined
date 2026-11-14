@@ -16,11 +16,14 @@
     <application android:name=".GyeotApplication" android:label="곁" android:icon="@drawable/ic_gyeot" android:allowBackup="false" android:supportsRtl="true" android:theme="@style/Theme.Gyeot" android:usesCleartextTraffic="false">
         <uses-library android:name="android.car" android:required="false" />
         <activity android:name=".MainActivity" android:exported="true" android:screenOrientation="sensorLandscape">
+            <meta-data android:name="distractionOptimized" android:value="false" />
+        </activity>
+        <activity android:name=".DriveActivity" android:exported="true" android:screenOrientation="sensorLandscape" android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="distractionOptimized" android:value="false" />
+            <meta-data android:name="distractionOptimized" android:value="true" />
         </activity>
         <service android:name=".DrivingService" android:exported="false" android:foregroundServiceType="specialUse">
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="User-started, ongoing in-vehicle sensor monitoring, driving habit logging and short audio coaching while navigation remains visible." />

@@ -14,7 +14,20 @@ sdkmanager 'system-images;android-34;pleos_car_emulator;arm64-v8a'
 
 ## 실행
 
-Mac에서는 프로젝트 폴더의 **곁 테스트 시작.command**를 더블클릭하면 설치된 전용 에뮬레이터를 시작하거나 재사용하고, APK 설치·앱 실행·콘솔 포트 연결을 준비합니다. 기존 앱 데이터는 지우지 않습니다. 브라우저에서 `http://127.0.0.1:8088/`을 열어 콘솔을 사용하세요.
+Mac에서 **60도로 음성 테스트.command**를 더블클릭하면 설치된 Pleos 에뮬레이터를 시작하거나 재사용하고, APK를 업데이트한 뒤 **60 시험도로 + 실제 SDK 속도 + 음성 켜짐**으로 시작합니다. 기존 운전자·녹음·기록을 삭제하지 않습니다. 일반 실행은 **곁 테스트 시작.command**로 기존 설정의 주행 화면을 엽니다.
+
+### 60 도로에서 과속 경고를 듣는 방법
+
+1. `60도로 음성 테스트.command`를 실행합니다. 앱 위쪽에 `에뮬레이터 시험도로 · 제한 60`, 오른쪽에 `코칭 중`이 보여야 합니다.
+2. 브라우저에서 [Virtual Console](http://127.0.0.1:8088/)을 엽니다. 이 웹페이지는 차량 센서 값을 조작하는 공식 시험 도구이고, 앱은 별도 에뮬레이터 화면에 있습니다.
+3. 콘솔에서 **D**를 고르고 **ACCEL을 4–5초 정도 길게** 누릅니다. 화면의 속도가 60을 넘으면 놓습니다.
+4. 60 초과가 2초 유지되면 앱의 초과 속도·경고와 과속 음성이 나옵니다. 계속 과속하면 30초 간격으로 안내합니다.
+5. **BRAKE**를 길게 눌러 60 이하로 낮추고 3초 유지하면 감속 격려 음성이 나옵니다.
+6. 종료 시 BRAKE로 0까지 정지한 뒤 **P**를 고르고 앱의 `주행 종료`를 누릅니다.
+
+시험 제한 60은 지도에서 읽은 값이 아닙니다. 이 debug 에뮬레이터 모드에만 명시적으로 넣는 시험값이며, 속도는 AAOS 차량 신호로 읽습니다. 시험 기록은 EMULATOR로 분리합니다. 실제 모드에서는 NaviHelper 제한속도가 없으면 도로 정보 대기를 표시합니다.
+
+주행 중에는 큰 속도·짧은 안내·음성 켜기/끄기·주행 종료만 있는 화면을 사용합니다. 운전자·음성 캐릭터·녹음 파일·상황 선택은 **정차 중 설정**에서 바꿉니다. 주행 화면을 닫거나 다른 내비 앱을 열어도 시작한 서비스와 음성은 계속 동작합니다. `음성 꺼짐`, `녹음 파일 없음`, `다른 안내 대기`가 표시되면 해당 상태부터 확인하세요. 현재 과속/회복에는 네 캐릭터의 기존 임시 음성 파일이 연결되어 있습니다.
 
 설치된 AVD 이름은 `Gyeot_Pleos_2_1`입니다. Android Studio의 Device Manager에서도 선택할 수 있습니다. RAM은 4 GB, 부팅은 Cold로 설정합니다. Quick boot에서는 VHAL을 이용할 수 없으므로 실행 스크립트는 snapshot을 사용하지 않습니다.
 
@@ -29,11 +42,11 @@ adb -s emulator-5554 install -r app/build/outputs/apk/debug/app-debug.apk
 adb -s emulator-5554 forward tcp:8088 tcp:8088
 ```
 
-PC 브라우저에서 `http://127.0.0.1:8088/`을 열면 Virtual Console입니다. Motion의 기어·브레이크·조향각, Convenience의 창문·탑승 상태 등으로 차량 신호를 변경할 수 있습니다. 앱에서는 `연결 · 설정`의 시연 모드를 끄고 주행을 시작해 제공되는 신호를 확인합니다.
+PC 브라우저에서 `http://127.0.0.1:8088/`을 열면 Virtual Console입니다. 기어·페달·조향·창문·탑승 상태 등으로 차량 신호를 변경합니다. 앱의 실제 차량·내비 모드를 확인하려면 정차 후 주행을 종료하고, `정차 중 설정 → 연결 · 설정`에서 **시연 모드와 에뮬레이터 시험도로를 모두 끈 뒤** 시작합니다.
 
 ## 선택적 실제 SDK 테스트
 
-다음 테스트는 일반 Android 에뮬레이터와 CI에서 실행하지 않습니다. 공식 Pleos 에뮬레이터를 부팅한 뒤 명시적으로 실행합니다. 테스트는 앱을 설치하고 활성 운전자의 CAR_SPEED 권한을 설정합니다.
+다음 테스트는 일반 Android 에뮬레이터와 CI에서 실행하지 않습니다. **개인 기록이 없는 별도 QA AVD**에서 명시적으로 실행합니다. Gradle 테스트가 앱을 제거할 수 있어 사용자 AVD에서는 실행하지 마세요. 여러 AVD 중 하나만 지정하는 직접 instrumentation 명령과 주행 음성 테스트는 [검증 기록](TESTING.md)을 참고하세요.
 
 ```sh
 ./gradlew :app:connectedDebugAndroidTest \
@@ -62,3 +75,4 @@ PC 브라우저에서 `http://127.0.0.1:8088/`을 열면 Virtual Console입니�
 - [Cold boot와 에뮬레이터 설정](https://document.pleos.ai/docs/connect/guide/getting-started/application-development/configure-pleos-connect-emulator)
 - [Virtual Console 연결](https://document.pleos.ai/docs/connect/guide/getting-started/application-development/use-vehicle-emulator)
 - [Virtual Console 사용](https://document.pleos.ai/docs/pleos-only/app-test-guide/virtual-console-guide)
+- [주행 제한 개발](https://document.pleos.ai/docs/pleos-only/vehicle-app-developer-guide/driving-restriction-development-guide)

@@ -58,7 +58,7 @@ class PleosSignals(private val app: GyeotApplication, private val scope: Corouti
         val listener = object : NaviHelperEventListener {
             override fun onCurrentRoadSpeedLimit(speedLimit: Int) {
                 limitTime = System.currentTimeMillis()
-                update { it.copy(speedLimitKph = speedLimit.takeIf { n -> n in 1..200 }?.toDouble(), speedLimitTimeMs = limitTime) }
+                update { it.copy(speedLimitKph = speedLimit.takeIf { n -> n in 1..200 }?.toDouble(), speedLimitTimeMs = limitTime, speedLimitOrigin = "NAVI") }
                 app.capability("도로 제한 속도", if (speedLimit > 0) "NaviHelper 연결됨" else "현재 도로 정보 없음")
             }
             override fun onRouteStarted(routeStartInfo: ai.pleos.playground.navi.data.RouteStartInfo) { app.monitor.update { it.copy(navigationActive = true) } }

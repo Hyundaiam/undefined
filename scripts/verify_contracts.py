@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Verify recording slots and the published Gleo/Android integration contracts."""
 import json
+import wave
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -35,6 +36,15 @@ manifest = ET.parse(ROOT / "app/src/main/AndroidManifest.xml").getroot()
 actions = {a.attrib[ns + "name"] for a in manifest.findall("application/receiver/intent-filter/action")}
 assert actions == expected
 assert not any("CONTROL_" in p.attrib[ns + "name"] for p in manifest.findall("uses-permission"))
+activities = {a.attrib[ns + "name"]: a for a in manifest.findall("application/activity")}
+def driving_optimized(name):
+    return next(m.attrib[ns + "value"] for m in activities[name].findall("meta-data") if m.attrib[ns + "name"] == "distractionOptimized")
+assert driving_optimized(".DriveActivity") == "true"
+assert driving_optimized(".MainActivity") == "false"
+with wave.open(str(assets / "voices/preroll.wav")) as preroll:
+    assert preroll.getsampwidth() == 2 and preroll.getnchannels() == 1
+    assert 0.15 <= preroll.getnframes() / preroll.getframerate() <= 0.2
+    assert not any(preroll.readframes(preroll.getnframes()))
 for source in (ROOT / "app/src/main/java").rglob("*.kt"):
     assert "TextToSpeech" not in source.read_text(), source
 print("Contracts verified: 15 good + 15 caution + 8 common, four voices, three Gleo actions.")

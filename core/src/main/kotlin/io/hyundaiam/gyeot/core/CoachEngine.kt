@@ -5,8 +5,10 @@ class CoachEngine {
     private val since = mutableMapOf<String, Long>()
     private val emitted = mutableMapOf<String, Long>()
     private var previous: SignalFrame? = null
+    private var speedEpisode = false
+    private var episodeLimit: Double? = null
 
-    fun reset() { since.clear(); emitted.clear(); previous = null }
+    fun reset() { since.clear(); emitted.clear(); previous = null; speedEpisode = false; episodeLimit = null }
 
     fun evaluate(frame: SignalFrame, nowMs: Long = frame.timeMs): List<Candidate> {
         if (nowMs - frame.timeMs !in 0..5_000) return emptyList()
@@ -17,7 +19,7 @@ class CoachEngine {
             if (active != true) { since.remove(key); return }
             val started = since.getOrPut(key) { frame.timeMs }
             val last = emitted[key]
-            val cooldown = if (id.startsWith("G")) 300_000L else 120_000L
+            val cooldown = when { id == "B02" -> 30_000L; id == "C06" -> 0L; id.startsWith("G") -> 300_000L; else -> 120_000L }
             if (frame.timeMs - started >= holdMs && (last == null || frame.timeMs - last >= cooldown)) {
                 emitted[key] = frame.timeMs
                 candidates += Candidate(id, reason, .9, frame.source)
@@ -26,8 +28,11 @@ class CoachEngine {
         val speed = frame.speedKph?.takeIf { it.isFinite() && it in 0.0..300.0 && (frame.source == SignalSource.DEMO || frame.speedTimeMs?.let { t -> nowMs - t in 0..3_000 } == true) }
         val limit = frame.speedLimitKph?.takeIf { it.isFinite() && it in 1.0..200.0 && (frame.source == SignalSource.DEMO || frame.speedLimitTimeMs?.let { t -> nowMs - t in 0..30_000 } == true) }
         val moving = speed?.let { it > 5 } ?: (frame.gear?.let { it == "GEAR_DRIVE" })
-        // Noise tolerance is an engineering filter, not a legal allowance.
-        condition("B02", if (speed != null && limit != null) speed > limit + 3 else null, 3_000, "내비게이션 제한 속도보다 높은 속도가 지속됨")
+        if (speedEpisode && limit != episodeLimit) { speedEpisode = false; emitted.remove("${frame.source}:B02") }
+        condition("B02", if (speed != null && limit != null) speed > limit else null, 2_000, "확인된 제한 속도보다 높은 속도가 2초 이상 지속됨")
+        if (candidates.any { it.scenarioId == "B02" }) { speedEpisode = true; episodeLimit = limit }
+        condition("C06", speedEpisode && speed != null && limit != null && speed <= limit, 3_000, "과속 안내 후 제한 속도 이하로 감속한 상태를 유지함")
+        if (candidates.any { it.scenarioId == "C06" }) { speedEpisode = false; emitted.remove("${frame.source}:B02") }
         condition("G02", if (speed != null && limit != null) speed in 15.0..limit else null, 30_000, "확인된 제한 속도 이하로 일정 시간 주행함")
         val gap = if (speed != null && speed > 15 && frame.distanceM?.isFinite() == true && frame.distanceM >= 0) frame.distanceM / (speed / 3.6) else null
         condition("B01", gap?.let { it < 1.2 }, 3_000, "외부 인지 입력의 시간 차간거리가 짧게 유지됨")
@@ -54,15 +59,22 @@ class CoachEngine {
         // Never punish emergency braking when the surrounding situation is unknown.
         condition("B04", if (frame.emergencyBraking == false) acceleration?.let { it < -3 } else null, 0, "불가피한 회피 상황이 아닌 급제동이 확인됨")
         previous = frame
-        return candidates.sortedBy { if (it.scenarioId.startsWith("B")) 0 else 1 }
+        return candidates.sortedBy { when { it.scenarioId == "B02" -> 0; it.scenarioId.startsWith("B") -> 1; else -> 2 } }
     }
 }
 
 class SpeechGate {
-    private var lastSpeech = Long.MIN_VALUE
+    private var lastCaution = Long.MIN_VALUE
+    private var lastOther = Long.MIN_VALUE
+    fun canSpeak(tone: Tone, nowMs: Long, navigationSpeaking: Boolean = false): Boolean {
+        if (navigationSpeaking) return false
+        return if (tone == Tone.CAUTION) lastCaution == Long.MIN_VALUE || nowMs - lastCaution >= 15_000
+        else (lastOther == Long.MIN_VALUE || nowMs - lastOther >= if (tone == Tone.COMMON) 3_000 else 60_000)
+    }
+    fun markPlayed(tone: Tone, nowMs: Long) { if (tone == Tone.CAUTION) lastCaution = nowMs else lastOther = nowMs }
     fun allow(tone: Tone, nowMs: Long, navigationSpeaking: Boolean): Boolean {
-        if (navigationSpeaking || (lastSpeech != Long.MIN_VALUE && nowMs - lastSpeech < if (tone == Tone.CAUTION) 15_000 else 60_000)) return false
-        lastSpeech = nowMs
+        if (!canSpeak(tone, nowMs, navigationSpeaking)) return false
+        markPlayed(tone, nowMs)
         return true
     }
 }

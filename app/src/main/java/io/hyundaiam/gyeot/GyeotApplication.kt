@@ -13,6 +13,9 @@ data class MonitorUi(
     val lastScenarioId: String? = null, val status: String = "다음 주행을 기다리고 있어요",
     val capabilities: Map<String, String> = emptyMap(),
     val navigationActive: Boolean = false,
+    val source: SignalSource = SignalSource.DEMO,
+    val feedback: String = "",
+    val feedbackAt: Long? = null,
 )
 class GyeotApplication : Application() {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -22,9 +25,11 @@ class GyeotApplication : Application() {
     val catalog by lazy { ScenarioCatalog.parse(assets.open("scenarios.json").bufferedReader().use { it.readText() }) }
     val monitor = MutableStateFlow(MonitorUi())
     val voicePlayer by lazy { ClipPlayer(this) }
+    val ux by lazy { CarUxMonitor(this) }
     lateinit var ready: Deferred<Unit>
     override fun onCreate() {
         super.onCreate()
+        ux.start(scope)
         ready = scope.async(Dispatchers.IO) {
             if (dao.allDrivers().isEmpty()) dao.addDriver(DriverEntity(name = "운전자 1"))
             dao.recoverTrips()

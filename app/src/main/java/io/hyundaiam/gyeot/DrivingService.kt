@@ -26,6 +26,8 @@ class DrivingService : Service() {
     private var starting = false
     private var autoDemo = true
     private var startedAt = 0L
+    private var testLimit = 0
+    private val pendingSpeech = linkedMapOf<String, Pair<Candidate, Long>>()
     private val engine = CoachEngine()
     private val speechGate = SpeechGate()
     private val gson = Gson()
@@ -45,7 +47,8 @@ class DrivingService : Service() {
             START -> if (!starting && tripId == null) {
                 starting = true
                 val prefsDemo = intent.getBooleanExtra("demo", true)
-                mode = if (prefsDemo) SignalSource.DEMO else SignalSource.PLEOS
+                testLimit = intent.getIntExtra("testLimit", 0).takeIf { TestEnvironment.available && it in 10..130 } ?: 0
+                mode = when { prefsDemo -> SignalSource.DEMO; testLimit > 0 -> SignalSource.EMULATOR; else -> SignalSource.PLEOS }
                 driverId = intent.getLongExtra("driver", 1)
                 promote()
                 scope.launch {
@@ -60,7 +63,7 @@ class DrivingService : Service() {
         return START_NOT_STICKY
     }
     private fun promote() {
-        val open = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        val open = PendingIntent.getActivity(this, 0, Intent(this, DriveActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val stop = PendingIntent.getService(this, 1, Intent(this, DrivingService::class.java).setAction(STOP), PendingIntent.FLAG_IMMUTABLE)
         val notification = NotificationCompat.Builder(this, CHANNEL).setSmallIcon(R.drawable.ic_gyeot)
             .setContentTitle(if (mode == SignalSource.DEMO) "곁 · 시연 기록 중" else "곁 · 주행 학습 중")
@@ -74,8 +77,8 @@ class DrivingService : Service() {
         val driver = requireNotNull(withContext(Dispatchers.IO) { app.dao.driver(driverId) })
         startedAt = System.currentTimeMillis()
         tripId = withContext(Dispatchers.IO) { app.dao.addTrip(TripEntity(driverId = driverId, source = mode.name, startedAt = startedAt, lastSeenAt = startedAt)) }
-        app.monitor.value = MonitorUi(true, driverId, mode == SignalSource.DEMO, tripId, startedAt, status = if (mode == SignalSource.DEMO) "시연 입력으로 학습 중 · 실제 기록과 분리" else "차량 신호 연결 중")
-        if (mode == SignalSource.PLEOS) {
+        app.monitor.value = MonitorUi(true, driverId, mode == SignalSource.DEMO, tripId, startedAt, status = "차량 신호 연결 중", source = mode)
+        if (mode != SignalSource.DEMO) {
             // FusedLocation's platform permission behavior must be validated in Pleos.
             // The service reads no location in this first release; it probes support only.
             backend = PleosSignals(app, scope, driver, false).also { it.start() }
@@ -87,17 +90,28 @@ class DrivingService : Service() {
             var seconds = 0
             while (isActive) {
                 val now = System.currentTimeMillis()
-                val frame = if (mode == SignalSource.PLEOS) backend?.frames?.value?.copy(timeMs = now) else app.monitor.value.frame ?: SignalFrame(now, SignalSource.DEMO, speedKph = 58.0, speedLimitKph = 60.0, distanceM = 42.0, gear = "GEAR_DRIVE")
+                val frame = if (mode != SignalSource.DEMO) backend?.frames?.value?.let { raw ->
+                    if (mode == SignalSource.EMULATOR) raw.copy(timeMs = now, source = mode, speedLimitKph = testLimit.toDouble(), speedLimitTimeMs = now, speedLimitOrigin = "EMULATOR_TEST")
+                    else raw.copy(timeMs = now)
+                } else (app.monitor.value.frame ?: SignalFrame(now, SignalSource.DEMO, speedKph = 58.0, speedLimitKph = 60.0, distanceM = 42.0, gear = "GEAR_DRIVE")).copy(timeMs = now)
                 if (frame != null) {
                     val hasSignal = frame.speedKph != null || frame.speedLimitKph != null || frame.beltBySeat.isNotEmpty() || frame.windowPositions.isNotEmpty() || frame.backrestPositions.isNotEmpty() || frame.gear != null
-                    app.monitor.update { it.copy(frame = frame, status = if (mode == SignalSource.PLEOS) { if (hasSignal) "차량의 제공된 신호로 학습 중" else "차량 신호 대기 · 연결 상태를 확인해 주세요" } else it.status) }
+                    val assessment = SpeedAssessment.from(frame, now)
+                    val status = when(assessment.state) {
+                        SpeedState.WAITING_SPEED -> "차량 속도 대기 · 연결 또는 속도 권한을 확인해 주세요"
+                        SpeedState.WAITING_LIMIT -> "제한 속도 미수신 · 과속 안내를 기다리고 있어요"
+                        SpeedState.OVER_LIMIT -> "제한 속도 초과 · 속도를 낮춰주세요"
+                        SpeedState.WITHIN_LIMIT -> "제한 속도 이내 · 주행을 확인하고 있어요"
+                    }
+                    app.monitor.update { it.copy(frame = frame, status = status) }
                     withContext(Dispatchers.IO) {
                         val id = tripId ?: return@withContext
                         app.dao.heartbeat(id, now)
                         if (seconds % 2 == 0 && hasSignal) app.dao.addObservation(ObservationEntity(driverId = driverId, tripId = id, source = mode.name, observedAt = now, payload = gson.toJson(frame)))
                         if (seconds % 60 == 0) app.dao.trimObservations()
                     }
-                    if (mode == SignalSource.PLEOS) engine.evaluate(frame, now).forEach { record(it) }
+                    if (mode != SignalSource.DEMO) engine.evaluate(frame, now).forEach { record(it) }
+                    flushSpeech(frame, now)
                 }
                 if (mode == SignalSource.DEMO && autoDemo && seconds > 0 && seconds % 15 == 0) {
                     val list = app.catalog.scenarios.filter { it.tone != Tone.COMMON }
@@ -118,6 +132,7 @@ class DrivingService : Service() {
             occupiedSeats = setOf("ROW_1_LEFT"), beltBySeat = mapOf("ROW_1_LEFT" to (id != "B14")))
         app.monitor.update { it.copy(frame = frame) }
         record(Candidate(id, "시연 입력 · ${scenario.trigger}", 1.0, SignalSource.DEMO))
+        flushSpeech(frame, System.currentTimeMillis())
     }
     private suspend fun record(candidate: Candidate) {
         val id = tripId ?: return
@@ -126,15 +141,32 @@ class DrivingService : Service() {
         withContext(Dispatchers.IO) {
             app.dao.record(EventEntity(driverId = driverId, tripId = id, source = candidate.source.name, scenarioId = scenario.id, category = scenario.category, tone = scenario.tone.name, reason = candidate.reason, confidence = candidate.confidence, observedAt = now))
         }
-        app.monitor.update { it.copy(lastScenarioId = scenario.id) }
+        app.monitor.update { it.copy(lastScenarioId = scenario.id, feedback = scenario.recordingText, feedbackAt = now) }
+        pendingSpeech[scenario.id] = candidate to now
+    }
+    private suspend fun flushSpeech(frame: SignalFrame, now: Long) {
         val prefs = app.settings.flow.first()
-        if (prefs.voice && (prefs.praise || scenario.tone != Tone.GOOD) && speechGate.allow(scenario.tone, now, false)) {
-            val driver = withContext(Dispatchers.IO) { app.dao.driver(driverId) } ?: return
+        val assessment = SpeedAssessment.from(frame, now)
+        pendingSpeech.entries.removeAll { (id, value) ->
+            now - value.second > 20_000 || (id == "B02" && assessment.state != SpeedState.OVER_LIMIT) ||
+                (id == "C06" && assessment.state != SpeedState.WITHIN_LIMIT) ||
+                (!prefs.praise && app.catalog.find(id)?.tone == Tone.GOOD)
+        }
+        if (!prefs.voice) { app.voicePlayer.report("음성 안내가 꺼져 있어요.", VoicePhase.MUTED); return }
+        val driver = withContext(Dispatchers.IO) { app.dao.driver(driverId) } ?: return
+        val ordered = pendingSpeech.keys.sortedBy { when { it == "B02" -> 0; it.startsWith("B") -> 1; it == "C06" -> 2; else -> 3 } }
+        for (id in ordered) {
+            val scenario = app.catalog.find(id) ?: continue
+            if (app.voicePlayer.playing.value != null && id != "B02") continue
+            if (!speechGate.canSpeak(scenario.tone, now)) continue
             // Some old clips mention a fixed 60 km/h limit or an unverified improvement.
             val legacyAllowed = mode == SignalSource.DEMO ||
-                (scenario.id == "B02" && app.monitor.value.frame?.speedLimitKph == 60.0) ||
-                scenario.id in setOf("B01", "B05", "B10", "B11")
-            app.voicePlayer.play(driver.persona, scenario, allowLegacy = legacyAllowed)
+                (id == "B02" && frame.speedLimitKph == 60.0) || id in setOf("B01", "B05", "B10", "B11", "C06")
+            when (app.voicePlayer.play(driver.persona, scenario, allowLegacy = legacyAllowed)) {
+                PlaybackResult.STARTED -> { speechGate.markPlayed(scenario.tone, now); pendingSpeech.remove(id); return }
+                PlaybackResult.MISSING -> pendingSpeech.remove(id)
+                PlaybackResult.FOCUS_DENIED -> return // Retry while the observation is still relevant.
+            }
         }
     }
     private fun stopMonitoring() {

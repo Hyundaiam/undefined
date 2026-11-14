@@ -2,7 +2,7 @@ package io.hyundaiam.gyeot.core
 
 import com.google.gson.Gson
 
-enum class SignalSource { PLEOS, DEMO }
+enum class SignalSource { PLEOS, DEMO, EMULATOR }
 enum class Tone { GOOD, CAUTION, COMMON }
 data class Scenario(
     val id: String, val title: String, val category: String, val tone: Tone,
@@ -36,6 +36,7 @@ data class SignalFrame(
     val laneDeviation: Boolean? = null,
     val seatDeviationFraction: Double? = null,
     val speedTimeMs: Long? = null, val speedLimitTimeMs: Long? = null,
+    val speedLimitOrigin: String? = null,
 )
 data class Candidate(val scenarioId: String, val reason: String, val confidence: Double, val source: SignalSource)
 data class Counts(val good: Int, val caution: Int) {

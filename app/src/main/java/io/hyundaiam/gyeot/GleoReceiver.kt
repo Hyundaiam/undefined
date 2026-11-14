@@ -40,9 +40,9 @@ class GleoReceiver : BroadcastReceiver() {
                     if (!prefs.gleoEnabled || !GleoProtocol.validPackage(prefs.gleoPackage)) return@withTimeout
                     val response = runCatching {
                         GleoProtocol.parameters(intent.getStringExtra("ACTION_PARAM"))
-                        val source = if (prefs.demo) "DEMO" else "PLEOS"
+                        val source = prefs.source.name
                         val summary = app.dao.habitSummary(prefs.driverId, source)
-                        val payload = JSONObject().put("source", source).put("simulated", prefs.demo)
+                        val payload = JSONObject().put("source", source).put("simulated", prefs.source != io.hyundaiam.gyeot.core.SignalSource.PLEOS)
                         when (action) {
                             "GET_DRIVING_CONTEXT" -> {
                                 val state = app.monitor.value

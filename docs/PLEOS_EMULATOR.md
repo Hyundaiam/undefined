@@ -14,6 +14,8 @@ sdkmanager 'system-images;android-34;pleos_car_emulator;arm64-v8a'
 
 ## 실행
 
+Mac에서는 프로젝트 폴더의 **곁 테스트 시작.command**를 더블클릭하면 설치된 전용 에뮬레이터를 시작하거나 재사용하고, APK 설치·앱 실행·콘솔 포트 연결을 준비합니다. 기존 앱 데이터는 지우지 않습니다. 브라우저에서 `http://127.0.0.1:8088/`을 열어 콘솔을 사용하세요.
+
 설치된 AVD 이름은 `Gyeot_Pleos_2_1`입니다. Android Studio의 Device Manager에서도 선택할 수 있습니다. RAM은 4 GB, 부팅은 Cold로 설정합니다. Quick boot에서는 VHAL을 이용할 수 없으므로 실행 스크립트는 snapshot을 사용하지 않습니다.
 
 ```sh

@@ -62,6 +62,15 @@ def main():
     forwards = [line.split() for line in adb("forward", "--list").stdout.splitlines()]
     if [serial, "tcp:8088", "tcp:8088"] not in forwards:
         adb("-s", serial, "forward", "--no-rebind", "tcp:8088", "tcp:8088")
+    # Android reports boot_complete before Pleos starts its console and navigation.
+    # Launch after those services are ready so the first-run navigation does not cover us.
+    print("차량 테스트 콘솔이 준비되기를 기다리는 중이에요…", flush=True)
+    for _ in range(60):
+        if ":8088" in adb("-s", serial, "shell", "ss", "-ltn", check=False).stdout:
+            break
+        time.sleep(1)
+    else:
+        raise SystemExit("차량 콘솔 준비가 지연되고 있어요. 잠시 후 실행 파일을 다시 열어 주세요.")
     if args.speed_test:
         for permission in ("android.car.permission.CAR_SPEED", "android.permission.POST_NOTIFICATIONS"):
             adb("-s", serial, "shell", "pm", "grant", "--user", "current", "io.hyundaiam.gyeot", permission)

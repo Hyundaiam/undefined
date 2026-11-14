@@ -18,6 +18,9 @@
         <activity android:name=".MainActivity" android:exported="true" android:screenOrientation="sensorLandscape">
             <meta-data android:name="distractionOptimized" android:value="false" />
         </activity>
+        <activity android:name=".VoiceSettingsActivity" android:exported="false" android:screenOrientation="sensorLandscape">
+            <meta-data android:name="distractionOptimized" android:value="false" />
+        </activity>
         <activity android:name=".DriveActivity" android:exported="true" android:screenOrientation="sensorLandscape" android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

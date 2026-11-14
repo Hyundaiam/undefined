@@ -8,6 +8,10 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.PlaybackException
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.audio.AudioSink
+import androidx.media3.exoplayer.audio.DefaultAudioSink
+import androidx.media3.common.util.UnstableApi
 import io.hyundaiam.gyeot.core.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,10 +29,13 @@ enum class PlaybackResult { STARTED, MISSING, FOCUS_DENIED }
 enum class VoicePhase { IDLE, PREPARING, PLAYING, COMPLETED, WAITING_FOCUS, MISSING, ERROR, MUTED }
 data class VoicePlayback(val scenarioId: String? = null, val phase: VoicePhase = VoicePhase.IDLE, val renderedCount: Int = 0, val lastRenderedScenario: String? = null, val persona: String? = null)
 
+@androidx.annotation.OptIn(UnstableApi::class)
 class ClipPlayer(private val app: GyeotApplication) {
     val message = MutableStateFlow("")
     val playing = MutableStateFlow<String?>(null)
     val state = MutableStateFlow(VoicePlayback())
+    val amplitude = MutableStateFlow(0f)
+    private var speechSink: SpeechAudioSink? = null
     private var renderWatcher: Job? = null
     private val texts by lazy { JSONObject(app.assets.open("legacy_voice_texts.json").bufferedReader().use { it.readText() }) }
     private val packaged by lazy { JSONObject(app.assets.open("voices/recorded/manifest.json").bufferedReader().use { it.readText() }) }
@@ -42,11 +49,16 @@ class ClipPlayer(private val app: GyeotApplication) {
     private val audioManager = app.getSystemService(AudioManager::class.java)
     private var focus: AudioFocusRequest? = null
     private val player by lazy {
-        ExoPlayer.Builder(app).build().apply {
+        val renderers = object : DefaultRenderersFactory(app) {
+            override fun buildAudioSink(context: android.content.Context, enableFloatOutput: Boolean, enableAudioTrackPlaybackParams: Boolean): AudioSink {
+                return SpeechAudioSink(DefaultAudioSink.Builder(context).setEnableFloatOutput(false).setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams).build()).also { speechSink = it }
+            }
+        }
+        ExoPlayer.Builder(app, renderers).build().apply {
             setAudioAttributes(androidx.media3.common.AudioAttributes.Builder().setUsage(androidx.media3.common.C.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE).setContentType(androidx.media3.common.C.AUDIO_CONTENT_TYPE_SPEECH).build(), false)
             addListener(object : Player.Listener {
-                override fun onPlaybackStateChanged(playbackState: Int) { if (playbackState == Player.STATE_ENDED) { playing.value = null; renderWatcher?.cancel(); state.update { it.copy(phase = VoicePhase.COMPLETED) }; message.value = "음성 안내 완료"; releaseFocus() } }
-                override fun onPlayerError(error: PlaybackException) { message.value = "음성을 재생하지 못했어요. 파일 형식을 확인해 주세요."; playing.value = null; renderWatcher?.cancel(); state.update { it.copy(phase = VoicePhase.ERROR) }; releaseFocus() }
+                override fun onPlaybackStateChanged(playbackState: Int) { if (playbackState == Player.STATE_ENDED) { playing.value = null; renderWatcher?.cancel(); amplitude.value = 0f; state.update { it.copy(phase = VoicePhase.COMPLETED) }; message.value = "음성 안내 완료"; releaseFocus() } }
+                override fun onPlayerError(error: PlaybackException) { message.value = "음성을 재생하지 못했어요. 파일 형식을 확인해 주세요."; playing.value = null; renderWatcher?.cancel(); amplitude.value = 0f; state.update { it.copy(phase = VoicePhase.ERROR) }; releaseFocus() }
             })
         }
     }
@@ -75,18 +87,21 @@ class ClipPlayer(private val app: GyeotApplication) {
             playing.value = "${persona}_${scenario.id}"
             message.value = if (custom != null || bundled != null) "내 녹음 재생 중" else "기존 임시 음성 재생 중"
             renderWatcher = app.scope.launch {
+                var rendered = false
                 while (isActive) {
-                    if (player.currentMediaItemIndex == 1 && player.isPlaying && player.currentPosition >= 100) {
+                    val audible = player.currentMediaItemIndex == 1 && player.isPlaying
+                    amplitude.value = if (audible) speechSink?.level ?: 0f else 0f
+                    if (!rendered && audible && player.currentPosition >= 100) {
                         state.update { it.copy(phase = VoicePhase.PLAYING, renderedCount = it.renderedCount + 1, lastRenderedScenario = scenario.id) }
-                        break
+                        rendered = true
                     }
-                    delay(100)
+                    delay(32)
                 }
             }
             PlaybackResult.STARTED
         }
     }
-    fun stop() { renderWatcher?.cancel(); player.stop(); playing.value = null; state.update { it.copy(phase = VoicePhase.IDLE) }; releaseFocus() }
+    fun stop() { renderWatcher?.cancel(); player.stop(); amplitude.value = 0f; playing.value = null; state.update { it.copy(phase = VoicePhase.IDLE) }; releaseFocus() }
     fun resetSession() { stop(); state.value = VoicePlayback(); message.value = "" }
     private fun releaseFocus() { val request = focus; focus = null; request?.let { audioManager.abandonAudioFocusRequest(it) } }
 

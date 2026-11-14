@@ -1,5 +1,21 @@
 # 검증 기록
 
+## v0.5.0 음성 구체와 설정
+
+2026-11-14, Pleos Connect 2.1.0 QA AVD에서 JVM 79개(기존 76개 + 음성 진폭/시각 검사 3개), 기기 10개(기존 기본/SDK/웹 8개 + 구체 음성/설정 2개)를 검증했습니다. Lint·앱/테스트 APK 빌드와 200개 음성 계약 검사도 통과했습니다.
+
+- 웹 센서로 과속 B02 판정 → 실제 Media3 음성 재생 → 재생 시각에 맞춘 PCM 진폭이 구체까지 전달되고 여러 강약 값으로 변하는지 확인
+- 미리 디코딩된 음성이 현재 무음 구간을 미리 움직이지 않는지, PCM 버퍼를 변경하지 않는지, 중단 시 진폭이 0이 되는지 검사
+- 실제 Compose 설정에서 엄마 목소리 선택·저장 → 해당 목소리 미리 듣기 → 음소거 즉시 중단 → 다시 켜기 → Activity 재생성 후 선택 유지
+- PixelCopy로 앱의 대기 구체·발화 구체·설정 화면을 저장해 무채색과 화면 구성을 확인
+- 기존 HTTP 입력·연결 끊김·DB 보존·백그라운드 수집·Pleos SDK 입력 검사를 다시 통과
+
+```sh
+adb -s emulator-5556 shell am instrument -w -r -e class io.hyundaiam.gyeot.CompanionSpeechTest,io.hyundaiam.gyeot.VoiceSettingsTest,io.hyundaiam.gyeot.WebSimulatorTest,io.hyundaiam.gyeot.LocalLearningTest,io.hyundaiam.gyeot.RecordingAndServiceTest,io.hyundaiam.gyeot.PleosRuntimeTest -e companionUi true -e webSimulator true -e pleosIntegration true io.hyundaiam.gyeot.test/androidx.test.runner.AndroidJUnitRunner
+```
+
+새 UI는 [음성 구체 안내](COMPANION_UI.md)를 참고하세요. 이전 버전의 화면·검증 기록은 아래에 보존했습니다.
+
 ## v0.4.0 웹 가상주행
 
 2026-11-14, 같은 Pleos QA AVD에서 검증했습니다. JVM 76개(기존 72개 + 웹 센서 계약 4개), 기기 8개(기존 기본/SDK 7개 + 웹 브리지 1개), Lint·APK·기기 테스트 APK 빌드와 200개 음성 계약 검사가 통과했습니다. 아래 v0.3.0의 134개 결과는 해당 버전의 별도 기록입니다.

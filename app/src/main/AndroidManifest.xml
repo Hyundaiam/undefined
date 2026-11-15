@@ -28,7 +28,7 @@
             </intent-filter>
             <meta-data android:name="distractionOptimized" android:value="true" />
         </activity>
-        <service android:name=".DrivingService" android:exported="false" android:foregroundServiceType="specialUse">
+        <service android:name=".DrivingService" android:exported="false" android:stopWithTask="false" android:foregroundServiceType="specialUse">
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="User-started, ongoing in-vehicle sensor monitoring, driving habit logging and short audio coaching while navigation remains visible." />
         </service>
         <receiver android:name=".GleoReceiver" android:exported="true">

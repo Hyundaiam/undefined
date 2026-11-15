@@ -1,5 +1,15 @@
 # 검증 기록
 
+## v0.5.1 백그라운드 코칭
+
+2026-11-15, 별도 Pleos QA AVD에서 백그라운드 경로 3개를 검증했습니다. 앱의 뒤로 가기 → DriveActivity 파괴 및 화면 없음 → 새 웹 과속 입력 → B02 실제 음성 트랙 진행 → 감속 입력 → C06 실제 음성 트랙 진행을 확인했습니다. 같은 주행 ID·DB heartbeat가 유지되고 주행이 종료되지 않았으며 입력 중단 시 음성이 멈추는 것도 확인했습니다. 기존 백그라운드 서비스·실제 Pleos SDK 신호 저장 검사도 통과했습니다.
+
+Pleos 분할 화면에서는 `moveTaskToBack` 이후에도 화면이 남는 경우를 확인해 뒤로 가기는 구체 Activity만 닫도록 했습니다. 서비스에는 `stopWithTask=false`를 명시했습니다. JVM 79개, Lint·APK·기기 테스트 APK 빌드, 음성 계약 검사도 통과했습니다. 강제 종료·재부팅 후 자동 복구 검증은 포함하지 않습니다.
+
+```sh
+adb -s emulator-5556 shell am instrument -w -r -e class 'io.hyundaiam.gyeot.WebSimulatorTest,io.hyundaiam.gyeot.RecordingAndServiceTest#userStartedMonitoringContinuesAfterActivityGoesToBackground,io.hyundaiam.gyeot.PleosRuntimeTest#liveVehicleSignalsContinueAndAreStoredWithTheActivityInBackground' -e webSimulator true -e pleosIntegration true io.hyundaiam.gyeot.test/androidx.test.runner.AndroidJUnitRunner
+```
+
 ## v0.5.0 음성 구체와 설정
 
 2026-11-14, Pleos Connect 2.1.0 QA AVD에서 JVM 79개(기존 76개 + 음성 진폭/시각 검사 3개), 기기 10개(기존 기본/SDK/웹 8개 + 구체 음성/설정 2개)를 검증했습니다. Lint·앱/테스트 APK 빌드와 200개 음성 계약 검사도 통과했습니다.

@@ -45,9 +45,9 @@ class DriveActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         window.statusBarColor = android.graphics.Color.BLACK
         window.navigationBarColor = android.graphics.Color.BLACK
-        onBackPressedDispatcher.addCallback(this) {
-            if (!app.ux.state.value.known || app.ux.state.value.restricted) moveTaskToBack(true) else finish()
-        }
+        // Close only the screen. Pleos may keep a moved-back split-screen task visible.
+        // Sensor collection and speech belong to DrivingService, not this Activity.
+        onBackPressedDispatcher.addCallback(this) { finish() }
         prepareCompanion(intent)
         setContent { CompanionView(this, app) }
     }

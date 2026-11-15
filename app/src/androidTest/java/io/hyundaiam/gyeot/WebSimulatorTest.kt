@@ -5,6 +5,9 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.lifecycle.Lifecycle
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import com.google.gson.JsonParser
 import io.hyundaiam.gyeot.core.SignalSource
 import kotlinx.coroutines.*
@@ -16,13 +19,23 @@ import java.net.Socket
 
 @RunWith(AndroidJUnit4::class)
 class WebSimulatorTest {
-    @Test fun changingWebSensorsCausesNativeSpeechAndDisconnectsSafely() = runBlocking<Unit> {
+    @Test fun changingWebSensorsInBackgroundCausesSpeechAndDisconnectsSafely() = runBlocking<Unit> {
         assumeTrue(InstrumentationRegistry.getArguments().getString("webSimulator") == "true")
         val app=ApplicationProvider.getApplicationContext<GyeotApplication>()
         app.ready.await()
         val screen=ActivityScenario.launch<DriveActivity>(Intent(app,DriveActivity::class.java).putExtra("webSimulator",true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         try {
             withTimeout(10000) { while(!app.monitor.value.running||app.monitor.value.source!=SignalSource.WEB_SIM)delay(100) }
+            val trip=requireNotNull(app.monitor.value.tripId)
+            val heartbeatBefore=requireNotNull(app.dao.trip(trip)).lastSeenAt
+            screen.onActivity { it.onBackPressedDispatcher.onBackPressed() }
+            withTimeout(5000) { while(screen.state!=Lifecycle.State.DESTROYED)delay(100) }
+            withContext(Dispatchers.Main) {
+                assertTrue(ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).none { it is DriveActivity })
+            }
+            // A destroyed Activity must not own sensor collection or speech.
+            screen.close()
+            assertEquals(Lifecycle.State.DESTROYED,screen.state)
             assertEquals(403,request("POST","/api/frame","{}",origin="https://example.com").first)
             assertEquals(400,request("POST","/api/frame","""{"scenarioId":"B02"}""").first)
             assertEquals(200,request("POST","/api/settings","""{"persona":"friend"}""").first)
@@ -32,7 +45,9 @@ class WebSimulatorTest {
                     assertEquals(200,request("POST","/api/frame","""{"speedKph":75,"speedLimitKph":60}""").first); delay(200)
                 }
             }
-            val trip=requireNotNull(app.monitor.value.tripId)
+            assertEquals(trip,app.monitor.value.tripId)
+            assertTrue(requireNotNull(app.dao.trip(trip)).lastSeenAt > heartbeatBefore)
+            assertNull(app.dao.trip(trip)?.endedAt)
             assertEquals("WEB_SIM",app.dao.trip(trip)?.source)
             assertEquals("B02",app.monitor.value.lastScenarioId)
             withTimeout(12000) {
@@ -42,6 +57,7 @@ class WebSimulatorTest {
             }
             val status=JsonParser.parseString(request("GET","/api/status").second).asJsonObject
             assertTrue(status["receiving"].asBoolean); assertEquals("WEB_SIM",status["source"].asString)
+            assertTrue(app.monitor.value.running)
             withTimeout(4000) { while(app.monitor.value.frame!=null)delay(100) }
             assertTrue(app.monitor.value.status.contains("대기"))
             assertEquals(VoicePhase.IDLE,app.voicePlayer.state.value.phase)
